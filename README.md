@@ -1,6 +1,6 @@
 # QMK CLI
 
-A program to help users work with QMK
+A program to help users work with [QMK Firmware](https://qmk.fm/).
 
 # Features
 
