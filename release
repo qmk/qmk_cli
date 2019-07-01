@@ -1,0 +1,12 @@
+#!/bin/sh
+# Increment the verison number and release a new version of qmk_cli.
+set -e
+set -x
+
+FLIT_USERNAME=${FLIT_USERNAME:=skully}
+
+export FLIT_USERNAME
+
+bumpversion patch
+git push origin master --tags
+flit publish
