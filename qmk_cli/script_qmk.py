@@ -73,7 +73,7 @@ def main():
     All other subcommands are dispatched to the local `qmk`, either the one we are currently in or whatever the user's default qmk_firmware is.
     """
     subcommand, subcommand_args = parse_args()
-    subcommand_module = 'qmk_cli.' + subcommand
+    subcommand_module = 'qmk_cli.subcommands.' + subcommand
     sys.argv = ['qmk-'+subcommand] + subcommand_args
     qmk_firmware = find_qmk_firmware()
     qmk_bin = qmk_firmware / 'bin' / 'qmk'
