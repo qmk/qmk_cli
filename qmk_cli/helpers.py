@@ -3,12 +3,12 @@
 from qmk_cli.milc import cli
 
 
-def question(question, boolean=True, default=None):
+def question(question, boolean=True, default=''):
     """Asks the user to answer a question.
 
     This keeps re-asking until it gets acceptible input.
     """
-    if cli.args.yes:
+    if cli.args.general_yes:
         return True
 
     if default and default.lower() == 'y':
@@ -18,7 +18,7 @@ def question(question, boolean=True, default=None):
     else:
         answer_key = 'y/n'
 
-    prompt = '*** %s [%s] ' % (answer_key,)
+    prompt = '*** %s [%s] ' % (question, answer_key)
 
     while True:
         answer = input(prompt)

@@ -21,24 +21,32 @@ default_branch = 'master'
 @cli.argument('fork', default=default_fork, nargs='?', help='The qmk_firmware fork to clone')
 @cli.entrypoint('Setup your computer for qmk_firmware.')
 def main(cli):
+    setup_successful = False
     qmk_firmware = Path(cli.args.destination)
 
     # Check on qmk_firmware, and if it doesn't exist offer to check it out.
     if qmk_firmware.exists():
         cli.log.info('Found qmk_firmware at %s.', str(qmk_firmware))
     else:
+        cli.log.error('qmk_firmware not found!')
         if question('Would you like to clone %s?' % cli.args.fork):
             git_url = '/'.join((cli.config.general.baseurl, cli.args.fork))
             clone(git_url, cli.args.destination, cli.config.general.branch)
 
     # Check if the build environment is setup, and if not offer to set it up
-    if not check_vital_programs():
-        cli.log.info('Your build environment is not setup completely.')
-        if question('Would you like to run util/qmk_install?'):
+    if check_vital_programs():
+        cli.log.info('Your build environment is ready!')
+    else:
+        cli.log.error('Your build environment is not setup completely.')
+        if qmk_firmware.exists() and question('Would you like to run util/qmk_install?'):
             curdir = os.getcwd()
             os.chdir(str(qmk_firmware))
-            subprocess.run(['util/qmk_install.sh'])
+            process = subprocess.run(['util/qmk_install.sh'])
             os.chdir(curdir)
+            if process.returncode == 0:
+                setup_successful = True
+
 
     # fin
-    cli.log.info('QMK setup complete!')
+    if setup_successful:
+        cli.log.info('QMK setup complete!')

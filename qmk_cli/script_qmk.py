@@ -82,7 +82,7 @@ def main():
         import_module(subcommand_module)
         qmk_cli.milc.cli()
 
-    except ModuleNotFoundError as e:
+    except ImportError as e:
         # Check to make sure there's not a bad import statement in qmk_cli
         if e.name != subcommand_module:
             raise
