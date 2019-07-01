@@ -2,11 +2,6 @@
 
 Check up for QMK environment.
 """
-import shutil
-import platform
-import os
-from pathlib import Path
-
 import qmk_cli.doctor
 from qmk_cli.milc import cli
 

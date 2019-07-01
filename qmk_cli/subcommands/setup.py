@@ -46,7 +46,6 @@ def main(cli):
             if process.returncode == 0:
                 setup_successful = True
 
-
     # fin
     if setup_successful:
         cli.log.info('QMK setup complete!')
