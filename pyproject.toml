@@ -7,6 +7,7 @@ dist-name = "qmk"
 module = "qmk_cli"
 author = "skullydazed"
 author-email = "skullydazed@gmail.com"
+description-file = "README.md"
 home-page = "https://github.com/qmk/qmk_cli"
 classifiers = [
     'Development Status :: 3 - Alpha',
