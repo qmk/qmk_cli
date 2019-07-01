@@ -7,7 +7,7 @@ import platform
 import os
 from pathlib import Path
 
-from milc import cli
+from qmk_cli.milc import cli
 
 
 def check_qmk_firmware():

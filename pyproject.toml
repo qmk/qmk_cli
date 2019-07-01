@@ -1,0 +1,33 @@
+[build-system]
+requires = ["flit"]
+build-backend = "flit.buildapi"
+
+[tool.flit.metadata]
+dist-name = "qmk"
+module = "qmk_cli"
+author = "skullydazed"
+author-email = "skullydazed@gmail.com"
+home-page = "https://github.com/qmk/qmk_cli"
+classifiers = [
+    'Development Status :: 3 - Alpha',
+    'Environment :: Console',
+    'Intended Audience :: Developers',
+    'Intended Audience :: System Administrators',
+    'Intended Audience :: End Users/Desktop',
+    'License :: OSI Approved :: MIT License',
+    'Natural Language :: English',
+    'Programming Language :: Python :: 3 :: Only',
+    'Topic :: Scientific/Engineering',
+    'Topic :: Software Development',
+    'Topic :: Utilities',
+]
+requires-python = ">=3.5"
+requires = [
+    #"milc", #FIXME(skullydazed): Included in the repo for now.
+    "argcomplete",
+    "colorama",
+    #"halo"
+]
+
+[tool.flit.scripts]
+qmk = "qmk_cli.script_qmk:main"
