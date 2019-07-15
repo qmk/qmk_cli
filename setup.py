@@ -8,7 +8,7 @@ metadata = setup_cfg['metadata']
 if __name__ == "__main__":
     setup(
         name=metadata['dist-name'],
-        description=open(metadata['description-file']).read(),
+        description='A program to help users work with [QMK Firmware](https://qmk.fm/).',
         entry_points={
             'console_scripts': ['%s = %s' % l for l in setup_cfg['entry_points'].items()]
         },
