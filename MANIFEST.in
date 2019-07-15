@@ -1,5 +1,4 @@
 include *.md
-include *.toml
 include *.txt
 include LICENSE
 include qmk

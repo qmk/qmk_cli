@@ -1,19 +1,16 @@
 from configparser import ConfigParser
 from setuptools import setup, find_packages
 
-import toml
-
 setup_cfg = ConfigParser()
 setup_cfg.read('setup.cfg')
-pyproject = toml.load('pyproject.toml')
-metadata = pyproject['tool']['flit']['metadata']
+metadata = setup_cfg['metadata']
 
 if __name__ == "__main__":
     setup(
         name=metadata['dist-name'],
         description=open(metadata['description-file']).read(),
         entry_points={
-            'console_scripts': ['%s = %s' % l for l in pyproject['tool']['flit']['scripts'].items()]
+            'console_scripts': ['%s = %s' % l for l in setup_cfg['entry_points'].items()]
         },
         license='MIT License',
         url=metadata['home-page'],
@@ -25,6 +22,24 @@ if __name__ == "__main__":
         long_description=open('README.md').read(),
         long_description_content_type="text/markdown",
         packages=find_packages(),
-        classifiers=metadata['classifiers'],
-        install_requires=metadata['requires'],
+        classifiers=[
+            'Development Status :: 3 - Alpha',
+            'Environment :: Console',
+            'Intended Audience :: Developers',
+            'Intended Audience :: System Administrators',
+            'Intended Audience :: End Users/Desktop',
+            'License :: OSI Approved :: MIT License',
+            'Natural Language :: English',
+            'Programming Language :: Python :: 3 :: Only',
+            'Topic :: Scientific/Engineering',
+            'Topic :: Software Development',
+            'Topic :: Utilities',
+        ],
+        requires_python=metadata['requires-python'],
+        install_requires=[
+            #"milc", #FIXME(skullydazed): Included in the repo for now.
+            "argcomplete",
+            "colorama",
+            #"halo"
+        ],
     )
