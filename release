@@ -9,6 +9,7 @@ TWINE_USERNAME=$PYPI_USERNAME
 
 export FLIT_USERNAME TWINE_USERNAME
 
+rm dist/*
 bumpversion patch
 git push origin master --tags
 
