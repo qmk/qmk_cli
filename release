@@ -3,9 +3,11 @@
 set -e
 set -x
 
-FLIT_USERNAME=${FLIT_USERNAME:=skully}
+PYPI_USERNAME=${PYPI_USERNAME:=skully}
+FLIT_USERNAME=$PYPI_USERNAME
+TWINE_USERNAME=$PYPI_USERNAME
 
-export FLIT_USERNAME
+export FLIT_USERNAME TWINE_USERNAME
 
 bumpversion patch
 git push origin master --tags
