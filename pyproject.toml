@@ -1,6 +1,12 @@
-[build-system]
-requires = ["flit"]
-build-backend = "flit.buildapi"
+#[build-system]
+# Use setuptools for now until this PR is merged and available in homebrew:
+#
+#     https://github.com/pypa/pip/pull/6606
+#
+# We still pull our build metadata from this file so we can easily go back to flit.
+#
+#requires = ["flit"]
+#build-backend = "flit.buildapi"
 
 [tool.flit.metadata]
 dist-name = "qmk"

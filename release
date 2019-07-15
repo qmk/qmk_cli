@@ -9,4 +9,10 @@ export FLIT_USERNAME
 
 bumpversion patch
 git push origin master --tags
-flit publish
+
+# For now we don't use flit
+#flit publish
+
+# Use setuptools until flit works with homebrew
+python3 setup.py sdist bdist_wheel
+twine upload dist/qmk-*
