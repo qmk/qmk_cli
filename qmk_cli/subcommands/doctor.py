@@ -16,8 +16,8 @@ def main(cli):
 
     funcs = (
         qmk_cli.doctor.check_qmk_firmware,
-        qmk_cli.doctor.check_vital_programs,
         qmk_cli.doctor.check_platform_tests,
+        qmk_cli.doctor.check_vital_programs,
     )
 
     ok = True
