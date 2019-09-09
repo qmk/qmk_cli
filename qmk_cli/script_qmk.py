@@ -16,7 +16,6 @@ from pkgutil import walk_packages
 
 import milc
 
-
 SUBCOMMAND_BLACKLIST = ['qmk.cli.subcommands']
 milc.EMOJI_LOGLEVELS['INFO'] = '{fg_blue}Ψ{style_reset_all}'
 
@@ -89,7 +88,7 @@ def main():
 
     for count, arg in enumerate(sys.argv[1:]):
         if arg and arg[0] != '-':
-            sys.argv[count+1] = subcommand = arg.replace('-', '_')
+            sys.argv[count + 1] = subcommand = arg.replace('-', '_')
             subcommand = subcommand.replace('_', '.')
             break
 

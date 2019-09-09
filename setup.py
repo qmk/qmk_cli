@@ -10,7 +10,7 @@ if __name__ == "__main__":
         name=metadata['dist-name'],
         description='A program to help users work with QMK Firmware.',
         entry_points={
-            'console_scripts': ['%s = %s' % l for l in setup_cfg['entry_points'].items()]
+            'console_scripts': ['%s = %s' % l for l in setup_cfg['entry_points'].items()],
         },
         license='MIT License',
         url=metadata['home-page'],
