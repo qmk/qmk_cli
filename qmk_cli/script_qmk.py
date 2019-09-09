@@ -3,20 +3,18 @@
 
 This program can be run from anywhere, with or without a qmk_firmware checkout. It provides a small set of subcommands for working with QMK and otherwise dispatches to the `qmk_firmware/bin/qmk` script for the repo you are currently in, or your default repo if you are not currently in a qmk_firmware checkout.
 
-FIXME(skullydazed): --help shows underscores where we want dashes in subcommands (EG json_keymap instead of json-keymap)
+FIXME(skullydazed/anyone): --help shows underscores where we want dashes in subcommands (EG json_keymap instead of json-keymap)
+TODO(skullydazed/anyone): Need a way to filter some subcommands from --help (EG `qmk subcommands`)
 """
 import argparse
 import os
 import subprocess
 import sys
 from functools import lru_cache
-from importlib import import_module
 from pathlib import Path
-from pkgutil import walk_packages
 
 import milc
 
-SUBCOMMAND_BLACKLIST = ['qmk.cli.subcommands']
 milc.EMOJI_LOGLEVELS['INFO'] = '{fg_blue}Ψ{style_reset_all}'
 
 
@@ -25,14 +23,6 @@ def qmk_main(cli):
     """The function that gets run when there's no subcommand.
     """
     cli.print_help()
-
-
-def subcommand_modules():
-    """Returns a list of subcommands
-    """
-    for pkg in walk_packages():
-        if 'qmk_cli.subcommands.' in pkg.name or 'qmk.cli.' in pkg.name:
-            yield pkg.name
 
 
 @lru_cache(maxsize=2)
@@ -80,49 +70,13 @@ def main():
     # Environment setup
     qmk_firmware = find_qmk_firmware()
     os.environ['QMK_HOME'] = str(qmk_firmware)
-    qmk_bin = qmk_firmware / 'bin' / 'qmk'
-    qmk_lib = qmk_firmware / 'lib' / 'python'
-    sys.path.append(str(qmk_lib))
 
-    subcommand = None
+    # Import the subcommand modules
+    import qmk_cli.subcommands
 
-    for count, arg in enumerate(sys.argv[1:]):
-        if arg and arg[0] != '-':
-            sys.argv[count + 1] = subcommand = arg.replace('-', '_')
-            subcommand = subcommand.replace('_', '.')
-            break
-
-    if not subcommand:
-        # Import all the subcommand modules so --help works correctly
-        for subcommand_module in subcommand_modules():
-            if subcommand_module in SUBCOMMAND_BLACKLIST:
-                continue
-
-            try:
-                import_module(subcommand_module)
-
-            except ModuleNotFoundError as e:
-                if e.name != subcommand_module:
-                    raise
-
-    else:
-        subcommand_module = None
-
-        for module in subcommand_modules():
-            if subcommand in module:
-                subcommand_module = module
-                break  # First match wins
-
-        if subcommand_module:
-            if subcommand_module.startswith('qmk.cli.'):
-                os.environ['ORIG_CWD'] = os.getcwd()
-                os.chdir(str(qmk_firmware))
-
-            import_module(subcommand_module)
-
-        else:
-            print("Ψ Can't find subcommand %s!" % (subcommand,))  # milc.cli.log is not available at this point in execution
-            exit(255)
+    if qmk_firmware.exists():
+        sys.path.append(str(qmk_firmware / 'lib' / 'python'))
+        import qmk.cli
 
     # Call the entrypoint
     milc.cli()
