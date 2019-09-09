@@ -2,6 +2,8 @@
 """CLI wrapper for running QMK commands.
 
 This program can be run from anywhere, with or without a qmk_firmware checkout. It provides a small set of subcommands for working with QMK and otherwise dispatches to the `qmk_firmware/bin/qmk` script for the repo you are currently in, or your default repo if you are not currently in a qmk_firmware checkout.
+
+FIXME(skullydazed): --help shows underscores where we want dashes in subcommands (EG json_keymap instead of json-keymap)
 """
 import argparse
 import os
@@ -10,6 +12,28 @@ import sys
 from functools import lru_cache
 from importlib import import_module
 from pathlib import Path
+from pkgutil import walk_packages
+
+import milc
+
+
+SUBCOMMAND_BLACKLIST = ['qmk.cli.subcommands']
+milc.EMOJI_LOGLEVELS['INFO'] = '{fg_blue}Ψ{style_reset_all}'
+
+
+@milc.cli.entrypoint('CLI wrapper for running QMK commands.')
+def qmk_main(cli):
+    """The function that gets run when there's no subcommand.
+    """
+    cli.print_help()
+
+
+def subcommand_modules():
+    """Returns a list of subcommands
+    """
+    for pkg in walk_packages():
+        if 'qmk_cli.subcommands.' in pkg.name or 'qmk.cli.' in pkg.name:
+            yield pkg.name
 
 
 @lru_cache(maxsize=2)
@@ -21,7 +45,7 @@ def in_qmk_firmware():
         found_bin = cur_dir / 'bin' / 'qmk'
         if found_bin.is_file():
             command = [found_bin, '--version']
-            result = subprocess.run(command)
+            result = subprocess.run(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
             if result.returncode == 0:
                 return cur_dir
@@ -47,21 +71,6 @@ def find_qmk_firmware():
     return Path.home() / 'qmk_firmware'
 
 
-def parse_args():
-    """Process arguments outside milc.
-    """
-    parser = argparse.ArgumentParser(description='CLI wrapper for running QMK commands.')
-    parser.add_argument('-H', '--home', help='Path to the qmk_firmware directory.')
-    parser.add_argument('subcommand', help='Subcommand to run')
-    parser.add_argument('subcommand_args', nargs=argparse.REMAINDER, help='Arguments to pass to the subcommand.')
-    args = parser.parse_args()
-
-    if args.home:
-        os.environ['QMK_HOME'] = args.home
-
-    return (args.subcommand, args.subcommand_args)
-
-
 def main():
     """Dispatch the CLI subcommand to the proper place.
 
@@ -69,33 +78,52 @@ def main():
 
     All other subcommands are dispatched to the local `qmk`, either the one we are currently in or whatever the user's default qmk_firmware is.
     """
-    subcommand, subcommand_args = parse_args()
-    subcommand_module = 'qmk_cli.subcommands.' + subcommand
-    sys.argv = ['qmk-'+subcommand] + subcommand_args
+    # Environment setup
     qmk_firmware = find_qmk_firmware()
-    qmk_bin = qmk_firmware / 'bin' / 'qmk'
     os.environ['QMK_HOME'] = str(qmk_firmware)
+    qmk_bin = qmk_firmware / 'bin' / 'qmk'
+    qmk_lib = qmk_firmware / 'lib' / 'python'
+    sys.path.append(str(qmk_lib))
 
-    try:
-        # Attempt to import the subcommand from qmk_cli first
-        import qmk_cli.milc
-        import_module(subcommand_module)
-        qmk_cli.milc.cli()
+    subcommand = None
 
-    except ImportError as e:
-        # Check to make sure there's not a bad import statement in qmk_cli
-        if e.name != subcommand_module:
-            raise
+    for count, arg in enumerate(sys.argv[1:]):
+        if arg and arg[0] != '-':
+            sys.argv[count+1] = subcommand = arg.replace('-', '_')
+            subcommand = subcommand.replace('_', '.')
+            break
 
-        # Dispatch to the underlying `qmk_firmware/bin/qmk`
-        if qmk_bin.is_file() and os.access(str(qmk_bin), os.X_OK):
-            argv = ['python3', str(qmk_bin), subcommand] + subcommand_args
-            os.execvp('python3', argv)
+    if not subcommand:
+        # Import all the subcommand modules so --help works correctly
+        for subcommand_module in subcommand_modules():
+            if subcommand_module in SUBCOMMAND_BLACKLIST:
+                continue
 
-        # Tell the user we can't continue
-        print('*** Could not locate qmk_firmware directory!')
-        exit(255)
+            try:
+                import_module(subcommand_module)
 
+            except ModuleNotFoundError as e:
+                if e.name != subcommand_module:
+                    raise
 
-if __name__ == '__main__':
-    main()
+    else:
+        subcommand_module = None
+
+        for module in subcommand_modules():
+            if subcommand in module:
+                subcommand_module = module
+                break  # First match wins
+
+        if subcommand_module:
+            if subcommand_module.startswith('qmk.cli.'):
+                os.environ['ORIG_CWD'] = os.getcwd()
+                os.chdir(str(qmk_firmware))
+
+            import_module(subcommand_module)
+
+        else:
+            print("Ψ Can't find subcommand %s!" % (subcommand,))  # milc.cli.log is not available at this point in execution
+            exit(255)
+
+    # Call the entrypoint
+    milc.cli()

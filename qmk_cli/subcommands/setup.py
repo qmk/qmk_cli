@@ -2,12 +2,12 @@
 """
 import os
 import subprocess
+import sys
 from pathlib import Path
 
-from qmk_cli.doctor import check_vital_programs
+from milc import cli
 from qmk_cli.git import clone
 from qmk_cli.helpers import question
-from qmk_cli.milc import cli
 
 default_repo = 'qmk_firmware'
 default_fork = 'qmk/' + default_repo
@@ -19,9 +19,8 @@ default_branch = 'master'
 @cli.argument('-b', '--branch', default=default_branch, help='The branch to clone')
 @cli.argument('destination', default=os.environ['QMK_HOME'], nargs='?', help='The directory to clone to')
 @cli.argument('fork', default=default_fork, nargs='?', help='The qmk_firmware fork to clone')
-@cli.entrypoint('Setup your computer for qmk_firmware.')
-def main(cli):
-    setup_successful = False
+@cli.subcommand('Setup your computer for qmk_firmware.')
+def setup(cli):
     qmk_firmware = Path(cli.args.destination)
 
     # Check on qmk_firmware, and if it doesn't exist offer to check it out.
@@ -33,19 +32,17 @@ def main(cli):
             git_url = '/'.join((cli.config.general.baseurl, cli.args.fork))
             clone(git_url, cli.args.destination, cli.config.general.branch)
 
-    # Check if the build environment is setup, and if not offer to set it up
-    if check_vital_programs():
-        cli.log.info('Your build environment is ready!')
-    else:
-        cli.log.error('Your build environment is not setup completely.')
-        if qmk_firmware.exists() and question('Would you like to run util/qmk_install?'):
-            curdir = os.getcwd()
-            os.chdir(str(qmk_firmware))
-            process = subprocess.run(['util/qmk_install.sh'])
-            os.chdir(curdir)
-            if process.returncode == 0:
-                setup_successful = True
+    # Run `qmk_firmware/bin/qmk doctor` to check the rest of the environment out
+    if qmk_firmware.exists():
+        qmk_bin = qmk_firmware / 'bin' / 'qmk'
+        doctor = subprocess.run([sys.executable, qmk_bin, 'doctor'])
+        if doctor.returncode != 0:
+            cli.log.error('Your build environment is not setup completely.')
 
-    # fin
-    if setup_successful:
-        cli.log.info('QMK setup complete!')
+            if question('Would you like to run util/qmk_install?'):
+                curdir = os.getcwd()
+                os.chdir(str(qmk_firmware))
+                process = subprocess.run(['util/qmk_install.sh'])
+                os.chdir(curdir)
+                if process.returncode == 0:
+                    cli.log.info('QMK setup complete!')

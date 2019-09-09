@@ -1,6 +1,6 @@
 """Useful helper functions.
 """
-from qmk_cli.milc import cli
+from milc import cli
 
 
 def question(question, boolean=True, default=''):
@@ -8,7 +8,7 @@ def question(question, boolean=True, default=''):
 
     This keeps re-asking until it gets acceptible input.
     """
-    if cli.args.general_yes:
+    if cli.args.yes:
         return True
 
     if default and default.lower() == 'y':

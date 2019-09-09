@@ -2,7 +2,7 @@
 """
 import subprocess
 
-from qmk_cli.milc import cli
+from milc import cli
 
 default_repo = 'qmk_firmware'
 default_fork = 'qmk/' + default_repo
