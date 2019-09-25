@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 """CLI wrapper for running QMK commands.
 
-This program can be run from anywhere, with or without a qmk_firmware checkout. It provides a small set of subcommands for working with QMK and otherwise dispatches to the `qmk_firmware/bin/qmk` script for the repo you are currently in, or your default repo if you are not currently in a qmk_firmware checkout.
+This program can be run from anywhere, with or without a qmk_firmware repository. If a qmk_firmware repository can be located we will use that to augment our available subcommands.
 
 FIXME(skullydazed/anyone): --help shows underscores where we want dashes in subcommands (EG json_keymap instead of json-keymap)
-TODO(skullydazed/anyone): Need a way to filter some subcommands from --help (EG `qmk subcommands`)
+TODO(skullydazed/anyone): Need a way to filter some subcommands from --help (EG `qmk hello`)
 """
 import argparse
 import os
@@ -61,20 +61,18 @@ def find_qmk_firmware():
 
 
 def main():
-    """Dispatch the CLI subcommand to the proper place.
-
-    We first check to see if the subcommand was provided by the global `qmk`. If it was we import that module and hand control over to the entrypoint.
-
-    All other subcommands are dispatched to the local `qmk`, either the one we are currently in or whatever the user's default qmk_firmware is.
+    """Setup the environment before dispatching to the entrypoint.
     """
     # Environment setup
     qmk_firmware = find_qmk_firmware()
     os.environ['QMK_HOME'] = str(qmk_firmware)
+    os.environ['ORIG_CWD'] = os.getcwd()
 
     # Import the subcommand modules
     import qmk_cli.subcommands
 
     if qmk_firmware.exists():
+        os.chdir(str(qmk_firmware))
         sys.path.append(str(qmk_firmware / 'lib' / 'python'))
         import qmk.cli
 
