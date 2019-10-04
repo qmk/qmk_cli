@@ -6,6 +6,8 @@ setup_cfg.read('setup.cfg')
 metadata = setup_cfg['metadata']
 
 if __name__ == "__main__":
+    with open('README.md', encoding='utf-8') as readme_file:
+        long_description=readme_file.read()
     setup(
         name=metadata['dist-name'],
         description='A program to help users work with QMK Firmware.',
@@ -19,7 +21,7 @@ if __name__ == "__main__":
         author_email=metadata['author-email'],
         maintainer=metadata['author'],
         maintainer_email=metadata['author-email'],
-        long_description=open('README.md').read(),
+        long_description=long_description,
         long_description_content_type="text/markdown",
         packages=find_packages(),
         py_modules = ['milc'],
