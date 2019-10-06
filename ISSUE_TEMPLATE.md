@@ -11,7 +11,7 @@ Explain what should happen.
 
 
 ## Experienced Functionality
-Explain what happened instead(Please include the debug log).
+Explain what happened instead (please include the debug log).
 
 
 ## Versions
