@@ -1,5 +1,8 @@
 #!/bin/sh
 # Increment the verison number and release a new version of qmk_cli.
+#
+# Required packages: pip3 install bumpversion twine
+
 set -e
 set -x
 
