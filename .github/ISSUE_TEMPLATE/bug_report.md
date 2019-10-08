@@ -22,7 +22,7 @@ about: Create a report to help us improve the QMK Firmware
 <!-- Run `arm-none-eabi-gcc --version` to find this out. -->
  - QMK Firmware version:
 <!-- Run `git describe --abbrev=0 --tags` to find this out. -->
- - Any keyboard related software installed? 
+ - Any keyboard-related software installed? 
    - [ ] AutoHotKey
    - [ ] Karabiner
    - [ ] Other:
