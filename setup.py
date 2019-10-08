@@ -43,6 +43,7 @@ if __name__ == "__main__":
             #"milc", #FIXME(skullydazed): Included in the repo for now.
             "appdirs",
             "argcomplete",
-            "colorama"
+            "colorama",
+            "hjson"
         ],
     )
