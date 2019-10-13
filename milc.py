@@ -599,7 +599,7 @@ class MILC(object):
             self.add_subparsers()
 
         if not name:
-            name = handler.__name__
+            name = handler.__name__.replace('_', '-')
 
         self.acquire_lock()
         kwargs['help'] = description

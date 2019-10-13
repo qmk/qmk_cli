@@ -3,7 +3,6 @@
 
 This program can be run from anywhere, with or without a qmk_firmware repository. If a qmk_firmware repository can be located we will use that to augment our available subcommands.
 
-FIXME(skullydazed/anyone): --help shows underscores where we want dashes in subcommands (EG json_keymap instead of json-keymap)
 TODO(skullydazed/anyone): Need a way to filter some subcommands from --help (EG `qmk hello`)
 """
 import argparse
