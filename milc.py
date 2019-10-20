@@ -39,7 +39,7 @@ import colorama
 from appdirs import user_config_dir
 
 # Disable logging until we can configure it how the user wants
-logging.basicConfig(filename='/dev/null')
+logging.basicConfig(stream=os.devnull)
 
 # Log Level Representations
 EMOJI_LOGLEVELS = {
