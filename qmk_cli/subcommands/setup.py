@@ -29,8 +29,8 @@ def setup(cli):
     else:
         cli.log.error('qmk_firmware not found!')
         if question('Would you like to clone %s?' % cli.args.fork):
-            git_url = '/'.join((cli.config.general.baseurl, cli.args.fork))
-            clone(git_url, cli.args.destination, cli.config.general.branch)
+            git_url = '/'.join((cli.config.setup.baseurl, cli.args.fork))
+            clone(git_url, cli.args.destination, cli.config.setup.branch)
 
     # Run `qmk_firmware/bin/qmk doctor` to check the rest of the environment out
     if qmk_firmware.exists():
