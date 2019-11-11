@@ -48,14 +48,15 @@ def find_qmk_firmware():
     """Look for qmk_firmware in the usual places.
 
     This function returns the path to qmk_firmware, or the default location if one does not exist.
-
-    FIXME(skullydazed): add config file support
     """
     if in_qmk_firmware():
         return in_qmk_firmware()
 
+    if milc.cli.config.user.qmk_home:
+        return Path(milc.cli.config.user.qmk_home).expanduser().resolve()
+
     if 'QMK_HOME' in os.environ:
-        return Path(os.environ['QMK_HOME'])
+        return Path(os.environ['QMK_HOME']).expanduser().resolve()
 
     return Path.home() / 'qmk_firmware'
 
