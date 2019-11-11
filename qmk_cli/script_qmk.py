@@ -65,6 +65,8 @@ def main():
     """Setup the environment before dispatching to the entrypoint.
     """
     # Environment setup
+    import qmk_cli
+    milc.cli.version = qmk_cli.__version__
     qmk_firmware = find_qmk_firmware()
     os.environ['QMK_HOME'] = str(qmk_firmware)
     os.environ['ORIG_CWD'] = os.getcwd()

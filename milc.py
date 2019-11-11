@@ -249,6 +249,9 @@ class MILC(object):
     """
     def __init__(self):
         """Initialize the MILC object.
+
+            version
+                The version string to associate with your CLI program
         """
         # Setup a lock for thread safety
         self._lock = threading.RLock() if thread else None
@@ -263,7 +266,7 @@ class MILC(object):
         self.config = None
         self.config_file = None
         self.default_arguments = {}
-        self.version = os.environ.get('QMK_VERSION', 'unknown')
+        self.version = 'unknown'
         self.release_lock()
 
         # Figure out our program name
@@ -356,6 +359,9 @@ class MILC(object):
         logging.root.setLevel(logging.DEBUG)
         self.release_lock()
 
+    def initialize_arguments(self):
+        """Setup the global parser arguments
+        """
         self.add_argument('-V', '--version', version=self.version, action='version', help='Display the version and exit')
         self.add_argument('-v', '--verbose', action='store_true', help='Make the logging more verbose')
         self.add_argument('--datetime-fmt', default='%Y-%m-%d %H:%M:%S', help='Format string for datetimes')
@@ -666,6 +672,7 @@ class MILC(object):
         self.release_lock()
 
         colorama.init()
+        self.initialize_arguments()
         self.parse_args()
         self.merge_args_into_config()
         self.setup_logging()
