@@ -56,7 +56,10 @@ def find_qmk_firmware():
         return Path(milc.cli.config.user.qmk_home).expanduser().resolve()
 
     if 'QMK_HOME' in os.environ:
-        return Path(os.environ['QMK_HOME']).expanduser().resolve()
+        path = Path(os.environ['QMK_HOME']).expanduser()
+        if path.exists():
+            return path.resolve()
+        return path
 
     return Path.home() / 'qmk_firmware'
 
