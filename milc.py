@@ -359,9 +359,6 @@ class MILC(object):
         logging.root.setLevel(logging.DEBUG)
         self.release_lock()
 
-    def initialize_arguments(self):
-        """Setup the global parser arguments
-        """
         self.add_argument('-V', '--version', version=self.version, action='version', help='Display the version and exit')
         self.add_argument('-v', '--verbose', action='store_true', help='Make the logging more verbose')
         self.add_argument('--datetime-fmt', default='%Y-%m-%d %H:%M:%S', help='Format string for datetimes')
@@ -370,6 +367,7 @@ class MILC(object):
         self.add_argument('--log-file', help='File to write log messages to')
         self.add_argument('--color', action='store_boolean', default=True, help='color in output')
         self.add_argument('--config-file', help='The location for the configuration file')
+        self.arg_only.append('config_file')
 
     def add_subparsers(self, title='Sub-commands', **kwargs):
         if self._inside_context_manager:
@@ -479,8 +477,10 @@ class MILC(object):
                     # Coerce values into useful datatypes
                     if value.lower() in ['1', 'yes', 'true', 'on']:
                         value = True
-                    elif value.lower() in ['0', 'no', 'false', 'none', 'off']:
+                    elif value.lower() in ['0', 'no', 'false', 'off']:
                         value = False
+                    elif value.lower() in ['none']:
+                        continue
                     elif value.replace('.', '').isdigit():
                         if '.' in value:
                             value = Decimal(value)
@@ -542,7 +542,8 @@ class MILC(object):
                 if section_name == 'general':
                     if option_name in ['config_file']:
                         continue
-                config.set(section_name, option_name, str(value))
+                if value is not None:
+                    config.set(section_name, option_name, str(value))
 
         # Write out the config file
         config_dir = self.config_file.parent
@@ -672,7 +673,6 @@ class MILC(object):
         self.release_lock()
 
         colorama.init()
-        self.initialize_arguments()
         self.parse_args()
         self.merge_args_into_config()
         self.setup_logging()
