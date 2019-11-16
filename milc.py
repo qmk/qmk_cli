@@ -501,7 +501,7 @@ class MILC(object):
 
             if argument not in self.arg_only:
                 # Find the argument's section
-                if argument in self.default_arguments[self._entrypoint.__name__]:
+                if self._entrypoint.__name__ in self.default_arguments and argument in self.default_arguments[self._entrypoint.__name__]:
                     argument_found = True
                     section = self._entrypoint.__name__
                 if argument in self.default_arguments['general']:
