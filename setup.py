@@ -44,6 +44,7 @@ if __name__ == "__main__":
             "appdirs",
             "argcomplete",
             "colorama",
+            "flake8",
             "hjson",
             "yapf"
         ],
