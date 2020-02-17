@@ -1,0 +1,77 @@
+name: CLI Setup and Docker CI
+
+on:
+  push:
+    branches:
+    - master
+  pull_request:
+    paths:
+    - 'qmk_cli/**'
+    - 'milc.py'
+    - 'qmk'
+    - 'requirements.txt'
+    - '.github/workflows/setup_and_doctor.yml'
+    - 'setup.cfg'
+    - 'setup.py'
+
+jobs:
+  test_cli_nix:
+    runs-on: ${{ matrix.os }}
+    env:
+      QMK_HOME: ~/qmk_firmware
+    strategy:
+      matrix:
+        os: [macos-latest, ubuntu-latest]
+        python-version: [3.5, 3.6, 3.7, 3.8]
+
+    steps:
+    - uses: actions/checkout@v1
+
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v1
+      with:
+        python-version: ${{ matrix.python-version }}
+
+    - name: Install QMK CLI
+      run: python -m pip install qmk
+
+    - name: Run qmk setup -y
+      run: qmk setup -y
+    - name: Run qmk doctor -y
+      run: |
+        cd $QMK_HOME
+        qmk doctor -y
+
+
+  test_cli_win:
+    runs-on: windows-latest
+    strategy:
+      matrix:
+        python-version: [3.5, 3.6, 3.7, 3.8]
+
+    steps:
+    - uses: actions/checkout@v1
+
+    - name: Set up MSYS2
+    - uses: qmk/setup-msys2@v1
+      with:
+        update: true
+
+    - name: (MSYS2) Install git and python3
+      run: msys2do pacman -S git python3-pip
+
+    - name: (MSYS2) Upgrade pip and setuptools
+      run: msys2do python3 -m pip install --upgrade pip setuptools
+
+    - name: (MSYS2) Install QMK CLI
+      run: msys2do python3 -m pip install qmk
+
+    - name: (MSYS2) Run qmk setup -y
+      run: |
+        msys2do export QMK_HOME="~/qmk_firmware"
+        msys2do qmk setup -y
+
+    - name: (MSYS2) Run qmk doctor -y
+      run: |
+        msys2do cd $QMK_HOME
+        msys2do qmk doctor -y
