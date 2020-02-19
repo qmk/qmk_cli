@@ -15,7 +15,7 @@ on:
     - 'setup.py'
 
 jobs:
-  test_cli_nix:
+  test_cli_linux_macos:
     runs-on: ${{ matrix.os }}
     env:
       QMK_HOME: ~/qmk_firmware
