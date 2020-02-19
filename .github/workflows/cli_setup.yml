@@ -70,7 +70,7 @@ jobs:
         msys2do python3 -m pip install wheel
 
     - name: (MSYS2) Install QMK CLI from source
-      run: msys2do setup_msys.sh $(cygpath "${{ github.workspace }}")
+      run: msys2do ./setup_msys.sh $(cygpath "${{ github.workspace }}")
 
     - name: (MSYS2) Run qmk setup -y
       run: msys2do qmk setup -y

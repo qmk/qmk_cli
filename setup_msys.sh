@@ -2,6 +2,8 @@
 
 cp -r $1 ~/qmk_cli
 
+echo $GITHUB_WORKSPACE
+
 export PATH=~/.local/bin:$PATH
 echo "PATH=$PATH" >> ~/.bashrc
 
