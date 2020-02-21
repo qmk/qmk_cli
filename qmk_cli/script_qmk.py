@@ -64,6 +64,11 @@ def find_qmk_firmware():
 def main():
     """Setup the environment before dispatching to the entrypoint.
     """
+    # Warn if they use an outdated python version
+    if sys.version_info < (3, 6):
+        print('Warning: Your Python version is out of date! Some subcommands may not work!')
+        print('Please upgrade to Python 3.6 or later.')
+
     # Environment setup
     import qmk_cli
     milc.cli.version = qmk_cli.__version__
