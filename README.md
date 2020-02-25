@@ -1,5 +1,5 @@
 # QMK CLI
-![CLI Setup](https://github.com/qmk/qmk_cli/workflows/CLI%20Setup/badge.svg)
+[![CLI Setup](https://github.com/qmk/qmk_cli/workflows/CLI%20Setup/badge.svg)](https://github.com/qmk/qmk_cli/actions?query=workflow%3A%22CLI+Setup%22)  
 A program to help users work with [QMK Firmware](https://qmk.fm/).
 
 # Features
