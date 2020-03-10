@@ -46,6 +46,7 @@ if __name__ == "__main__":
             "colorama",
             "flake8",
             "hjson",
+            "nose2",
             "yapf"
         ],
     )
