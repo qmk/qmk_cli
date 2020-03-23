@@ -31,10 +31,13 @@ def in_qmk_firmware():
         found_bin = cur_dir / 'bin' / 'qmk'
         if found_bin.is_file():
             command = [found_bin.as_posix(), '--version']
-            result = subprocess.run(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            result = subprocess.run(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True)
 
             if result.returncode == 0:
                 return cur_dir
+            else:
+                print(str(result.stdout))
+                sys.exit(result.returncode)
 
         # Move up a directory before the next iteration
         cur_dir = cur_dir / '..'
