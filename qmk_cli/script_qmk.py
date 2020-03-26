@@ -30,7 +30,7 @@ def in_qmk_firmware():
     while len(cur_dir.parents) > 0:
         found_bin = cur_dir / 'bin' / 'qmk'
         if found_bin.is_file():
-            command = [found_bin.as_posix(), '--version']
+            command = [sys.executable, found_bin.as_posix()]
             result = subprocess.run(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
             if result.returncode == 0:
