@@ -79,7 +79,7 @@ def main():
     # Import the subcommand modules
     import qmk_cli.subcommands
 
-    if qmk_firmware.exists():
+    if qmk_firmware.exists() and os.listdir(qmk_firmware):
         os.chdir(str(qmk_firmware))
         sys.path.append(str(qmk_firmware / 'lib' / 'python'))
         import qmk.cli

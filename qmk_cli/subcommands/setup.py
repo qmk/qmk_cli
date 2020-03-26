@@ -24,7 +24,7 @@ def setup(cli):
     qmk_firmware = Path(cli.args.destination)
 
     # Check on qmk_firmware, and if it doesn't exist offer to check it out.
-    if qmk_firmware.exists():
+    if qmk_firmware.exists() and os.listdir(qmk_firmware):
         cli.log.info('Found qmk_firmware at %s.', str(qmk_firmware))
     else:
         cli.log.error('qmk_firmware not found!')
