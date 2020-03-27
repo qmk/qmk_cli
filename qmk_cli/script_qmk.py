@@ -79,10 +79,13 @@ def main():
     # Import the subcommand modules
     import qmk_cli.subcommands
 
-    if qmk_firmware.exists() and os.listdir(qmk_firmware):
+    if qmk_firmware.exists():
         os.chdir(str(qmk_firmware))
         sys.path.append(str(qmk_firmware / 'lib' / 'python'))
-        import qmk.cli
+        try:
+            import qmk.cli
+        except ImportError:
+            pass # Ingore as this might folder might not be set up correctly
 
     # Call the entrypoint
     milc.cli()
