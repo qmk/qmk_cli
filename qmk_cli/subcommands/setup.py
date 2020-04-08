@@ -35,7 +35,12 @@ def setup(cli):
     # Run `qmk_firmware/bin/qmk doctor` to check the rest of the environment out
     if qmk_firmware.exists():
         qmk_bin = qmk_firmware / 'bin' / 'qmk'
-        doctor = subprocess.run([sys.executable, str(qmk_bin), 'doctor', '-y' if cli.args.yes else ''])
+        doctor_cmd = [sys.executable, str(qmk_bin), 'doctor']
+        if cli.args.yes:
+            doctor_cmd.append('--yes')
+        if cli.args.no:
+            doctor_cmd.append('--no')
+        doctor = subprocess.run(doctor_cmd)
         if doctor.returncode != 0:
             cli.log.error('Your build environment is not setup completely.')
 
