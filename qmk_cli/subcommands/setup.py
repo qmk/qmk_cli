@@ -14,7 +14,8 @@ default_fork = 'qmk/' + default_repo
 default_branch = 'master'
 
 
-@cli.argument('-y', '--yes', action='store_true', help='Answer yes to all questions')
+@cli.argument('-n', '--no', arg_only=True, action='store_true', help='Answer no to all questions')
+@cli.argument('-y', '--yes', arg_only=True, action='store_true', help='Answer yes to all questions')
 @cli.argument('--baseurl', default='https://github.com', help='The URL all git operations start from')
 @cli.argument('-b', '--branch', default=default_branch, help='The branch to clone')
 @cli.argument('destination', default=os.environ['QMK_HOME'], nargs='?', help='The directory to clone to')
@@ -22,6 +23,11 @@ default_branch = 'master'
 @cli.subcommand('Setup your computer for qmk_firmware.')
 def setup(cli):
     qmk_firmware = Path(cli.args.destination)
+
+    # Sanity checks
+    if cli.args.yes and cli.args.no:
+        cli.log.error("Can't use both --yes and --no at the same time.")
+        exit(1)
 
     # Check on qmk_firmware, and if it doesn't exist offer to check it out.
     if qmk_firmware.exists():
