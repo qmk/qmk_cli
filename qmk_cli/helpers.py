@@ -1,6 +1,6 @@
 """Useful helper functions.
 """
-from milc import cli
+from milc import cli, format_ansi
 
 
 def question(question, boolean=True, default=''):
@@ -18,10 +18,11 @@ def question(question, boolean=True, default=''):
     else:
         answer_key = 'y/n'
 
-    prompt = '*** %s [%s] ' % (question, answer_key)
+    prompt = format_ansi('\n*** %s [%s] ' % (question, answer_key))
 
     while True:
         answer = input(prompt)
+        print()
         if answer == '' and default.lower() == 'y':
             answer = 'y'
         elif answer == '' and default.lower() == 'n':

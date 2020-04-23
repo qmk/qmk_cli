@@ -28,5 +28,5 @@ def clone(url, destination, branch):
         cli.log.error('git clone exited %d', p.returncode)
         return False
     else:
-        cli.log.info('Successfully cloned %s to %s!', cli.args.fork, cli.args.destination)
+        cli.log.info('Successfully cloned %s to %s!', url, destination)
         return True
