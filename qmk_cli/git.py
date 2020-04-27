@@ -26,7 +26,6 @@ def clone(url, destination, branch):
 
     if p.returncode != 0:
         cli.log.error('git clone exited %d', p.returncode)
-        return False
     else:
         cli.log.info('Successfully cloned %s to %s!', url, destination)
-        return True
+    return p.returncode

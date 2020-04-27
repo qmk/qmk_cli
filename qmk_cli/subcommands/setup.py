@@ -40,11 +40,13 @@ def setup(cli):
         cli.log.error('Could not find qmk_firmware!')
         if question(clone_prompt):
             git_url = '/'.join((cli.config.setup.baseurl, cli.args.fork))
-            clone(git_url, cli.args.home, cli.config.setup.branch)
+            result = clone(git_url, cli.args.home, cli.config.setup.branch)
+            if not result:
+                exit(1)
 
     # Offer to set `user.qmk_home` for them.
     if cli.args.home != os.environ['QMK_HOME'] and question(home_prompt):
-        cli.config['user']['qmk_home'] = str(cli.args.home)
+        cli.config['user']['qmk_home'] = str(cli.args.home.absolute())
         cli.write_config_option('user', 'qmk_home')
 
     # Run `qmk_firmware/bin/qmk doctor` to check the rest of the environment out
