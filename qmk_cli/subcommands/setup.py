@@ -41,7 +41,7 @@ def setup(cli):
         if question(clone_prompt):
             git_url = '/'.join((cli.config.setup.baseurl, cli.args.fork))
             result = clone(git_url, cli.args.home, cli.config.setup.branch)
-            if not result:
+            if result != 0:
                 exit(1)
 
     # Offer to set `user.qmk_home` for them.
