@@ -295,7 +295,7 @@ class MILC(object):
         self.prog_name = self.prog_name.split('/')[-1]
 
         # Initialize all the things
-        self.read_config_file()
+        self.initialize_config()
         self.initialize_argparse()
         self.initialize_logging()
 
@@ -482,22 +482,20 @@ class MILC(object):
 
         self.release_lock()
 
-    def read_config_file(self):
-        """Read in the configuration file and store it in self.config.
+    def read_config_file(self, config_file):
+        """Read in the configuration file and return Configuration objects for it and the config_source.
         """
-        self.acquire_lock()
-        self.config = Configuration()
-        self.config_source = Configuration()
-        self.config_file = self.find_config_file()
+        config = Configuration()
+        config_source = Configuration()
 
-        if self.config_file and self.config_file.exists():
-            config = RawConfigParser(self.config)
-            config.read(str(self.config_file))
+        if config_file.exists():
+            raw_config = RawConfigParser()
+            raw_config.read(str(config_file))
 
-            # Iterate over the config file options and write them into self.config
-            for section in config.sections():
-                for option in config.options(section):
-                    value = config.get(section, option)
+            # Iterate over the config file options and write them into config
+            for section in raw_config.sections():
+                for option in raw_config.options(section):
+                    value = raw_config.get(section, option)
 
                     # Coerce values into useful datatypes
                     if value.lower() in ['1', 'yes', 'true', 'on']:
@@ -512,9 +510,17 @@ class MILC(object):
                         else:
                             value = int(value)
 
-                    self.config[section][option] = value
-                    self.config_source[section][option] = 'config_file'
+                    config[section][option] = value
+                    config_source[section][option] = 'config_file'
 
+        return config, config_source
+
+    def initialize_config(self):
+        """Read in the configuration file and store it in self.config.
+        """
+        self.acquire_lock()
+        self.config_file = self.find_config_file()
+        self.config, self.config_source = self.read_config_file(self.config_file)
         self.release_lock()
 
     def merge_args_into_config(self):
@@ -559,6 +565,54 @@ class MILC(object):
 
         self.release_lock()
 
+    def _save_config_file(self, config):
+        """Write config to disk.
+        """
+        # Generate a sanitized version of our running configuration
+        sane_config = RawConfigParser()
+        for section_name, section in config._config.items():
+            sane_config.add_section(section_name)
+            for option_name, value in section.items():
+                if section_name == 'general':
+                    if option_name in ['config_file']:
+                        continue
+                if value is not None:
+                    sane_config.set(section_name, option_name, str(value))
+
+        config_dir = self.config_file.parent
+        if not config_dir.exists():
+            config_dir.mkdir(parents=True, exist_ok=True)
+
+        # Write the config file atomically.
+        self.acquire_lock()
+        with NamedTemporaryFile(mode='w', dir=str(config_dir), delete=False) as tmpfile:
+            sane_config.write(tmpfile)
+
+        if os.path.getsize(tmpfile.name) > 0:
+            os.replace(tmpfile.name, str(self.config_file))
+        else:
+            self.log.warning('Config file saving failed, not replacing %s with %s.', str(self.config_file), tmpfile.name)
+        self.release_lock()
+
+    def write_config_option(self, section, option):
+        """Save a single config option to the config file.
+        """
+        if not self.config_file:
+            self.log.warning('%s.config_file not set, not saving config!', self.__class__.__name__)
+            return
+
+        config, config_source = self.read_config_file(self.config_file)
+
+        if section in config and option in config[section] and config[section][option] is None:
+            del(config[section][option])
+        else:
+            config[section][option] = str(self.config[section][option])
+
+        self._save_config_file(config)
+
+        # Housekeeping
+        self.log.info('Wrote configuration to %s', shlex.quote(str(self.config_file)))
+
     def save_config(self):
         """Save the current configuration to the config file.
         """
@@ -568,36 +622,9 @@ class MILC(object):
             self.log.warning('%s.config_file file not set, not saving config!', self.__class__.__name__)
             return
 
-        self.acquire_lock()
-
-        # Generate a sanitized version of our running configuration
-        config = RawConfigParser()
-        for section_name, section in self.config._config.items():
-            config.add_section(section_name)
-            for option_name, value in section.items():
-                if section_name == 'general':
-                    if option_name in ['config_file']:
-                        continue
-                if value is not None:
-                    config.set(section_name, option_name, str(value))
-
-        # Write out the config file
-        config_dir = self.config_file.parent
-        if not config_dir.exists():
-            config_dir.mkdir(parents=True, exist_ok=True)
-
-        with NamedTemporaryFile(mode='w', dir=str(config_dir), delete=False) as tmpfile:
-            config.write(tmpfile)
-
-        # Move the new config file into place atomically
-        if os.path.getsize(tmpfile.name) > 0:
-            os.replace(tmpfile.name, str(self.config_file))
-        else:
-            self.log.warning('Config file saving failed, not replacing %s with %s.', str(self.config_file), tmpfile.name)
-
-        # Housekeeping
-        self.release_lock()
-        cli.log.info('Wrote configuration to %s', shlex.quote(str(self.config_file)))
+        # Write config to disk
+        self._save_config_file(self.config)
+        self.log.info('Wrote configuration to %s', shlex.quote(str(self.config_file)))
 
     def __call__(self):
         """Execute the entrypoint function.
