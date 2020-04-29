@@ -7,7 +7,7 @@ import sys
 from pathlib import Path
 
 from milc import cli
-from qmk_cli.git import clone
+from qmk_cli.git import git_clone
 from qmk_cli.helpers import question
 
 default_repo = 'qmk_firmware'
@@ -40,7 +40,7 @@ def setup(cli):
         cli.log.error('Could not find qmk_firmware!')
         if question(clone_prompt):
             git_url = '/'.join((cli.config.setup.baseurl, cli.args.fork))
-            result = clone(git_url, cli.args.home, cli.config.setup.branch)
+            result = git_clone(git_url, cli.args.home, cli.config.setup.branch)
             if result != 0:
                 exit(1)
 
@@ -50,11 +50,13 @@ def setup(cli):
         cli.write_config_option('user', 'qmk_home')
 
     # Run `qmk_firmware/bin/qmk doctor` to check the rest of the environment out
-    if cli.args.home.exists():
-        qmk_bin = cli.args.home / 'bin' / 'qmk'
-        doctor_cmd = [sys.executable, str(qmk_bin), 'doctor']
-        if cli.args.yes:
-            doctor_cmd.append('--yes')
-        if cli.args.no:
-            doctor_cmd.append('--no')
-        doctor = subprocess.run(doctor_cmd)
+    qmk_bin = cli.args.home / 'bin/qmk'
+    doctor_cmd = [sys.executable, qmk_bin, 'doctor']
+
+    if cli.args.yes:
+        doctor_cmd.append('--yes')
+
+    if cli.args.no:
+        doctor_cmd.append('--no')
+
+    subprocess.run(doctor_cmd)

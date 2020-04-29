@@ -4,7 +4,7 @@ import os
 from pathlib import Path
 
 from milc import cli
-from qmk_cli.git import clone as git_clone
+from qmk_cli.git import git_clone
 
 default_repo = 'qmk_firmware'
 default_fork = 'qmk/' + default_repo
@@ -27,5 +27,4 @@ def clone(cli):
         cli.log.error('Destination already exists: %s', cli.args.destination)
         exit(1)
 
-    success = git_clone(git_url, cli.args.destination, cli.config.clone.branch)
-    exit(0 if success else 1)
+    return git_clone(git_url, cli.args.destination, cli.config.clone.branch)
