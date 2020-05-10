@@ -30,7 +30,12 @@ def in_qmk_firmware():
     cur_dir = Path.cwd()
     while len(cur_dir.parents) > 0:
         found_bin = cur_dir / 'bin' / 'qmk'
-        if found_bin.is_file():
+        # An additional check for something that exists in the root of qmk_firmware,
+        # but not in the script's install directory, to avoid recursive execution,
+        # if started from install directory.
+        # e.g.: cd ~/.local/bin && ./qmk
+        found_makefile = cur_dir / 'Makefile'
+        if found_bin.is_file() and found_makefile.is_file():
             command = [sys.executable, found_bin.as_posix()]
             result = subprocess.run(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
