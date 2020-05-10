@@ -34,8 +34,8 @@ def in_qmk_firmware():
         # but not in the script's install directory, to avoid recursive execution,
         # if started from install directory.
         # e.g.: cd ~/.local/bin && ./qmk
-        found_makefile = cur_dir / 'Makefile'
-        if found_bin.is_file() and found_makefile.is_file():
+        found_quantum = cur_dir / 'quantum'
+        if found_bin.is_file() and found_quantum.is_dir():
             command = [sys.executable, found_bin.as_posix()]
             result = subprocess.run(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
