@@ -96,6 +96,9 @@ def main():
         try:
             import qmk.cli
         except ImportError:
+            if qmk_firmware.name != 'qmk_firmware':
+                print('Warning: %s does not end in "qmk_firmware". Do you need to set QMK_HOME to "%s/qmk_firmware"?' % (qmk_firmware,qmk_firmware))
+
             print('Error: %s is too old or not set up correctly!' % qmk_firmware)
             print('Please update it or remove it completely before continuing.')
             sys.exit(1)
