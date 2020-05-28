@@ -33,4 +33,4 @@ def question(question, boolean=True, default=''):
         elif answer.lower() in ['n', 'no']:
             return False
         else:
-            cli.args.echo('Invalid answer!')
+            cli.echo('Invalid answer!')
