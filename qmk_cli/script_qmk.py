@@ -104,4 +104,16 @@ def main():
             sys.exit(1)
 
     # Call the entrypoint
-    milc.cli()
+    return_code = milc.cli()
+
+    if return_code is False:
+        exit(1)
+
+    elif return_code is not True and isinstance(return_code, int):
+        if return_code < 0 or return_code > 255:
+            milc.cli.log.error('Invalid return_code: %d', return_code)
+            exit(255)
+
+        exit(return_code)
+
+    exit(0)
