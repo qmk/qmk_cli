@@ -12,9 +12,9 @@ default_branch = 'master'
 
 
 @cli.argument('--baseurl', default='https://github.com', help='The URL all git operations start from (Default: https://github.com)')
-@cli.argument('-b', '--branch', default=default_branch, help='The branch to clone (Default: %s)' % default_branch)
-@cli.argument('destination', default=None, nargs='?', help='The directory to clone to (Default: Current Directory)')
-@cli.argument('fork', default=default_fork, nargs='?', help='The qmk_firmware fork to clone (Default: %s)' % default_fork)
+@cli.argument('-b', '--branch', default=default_branch, help='The branch to clone. Default: %s' % default_branch)
+@cli.argument('destination', default=None, nargs='?', help='The directory to clone to. Default: (current directory)')
+@cli.argument('fork', default=default_fork, nargs='?', help='The qmk_firmware fork to clone. Default: %s' % default_fork)
 @cli.subcommand('Clone a qmk_firmware fork.')
 def clone(cli):
     if not cli.args.destination:
