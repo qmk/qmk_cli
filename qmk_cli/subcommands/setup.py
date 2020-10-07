@@ -7,8 +7,8 @@ import sys
 from pathlib import Path
 
 from milc import cli
+from milc.questions import yesno
 from qmk_cli.git import git_clone
-from qmk_cli.helpers import question
 
 default_base = 'https://github.com'
 default_repo = 'qmk_firmware'
@@ -39,14 +39,14 @@ def setup(cli):
         cli.log.info('Found qmk_firmware at %s.', str(cli.args.home))
     else:
         cli.log.error('Could not find qmk_firmware!')
-        if question(clone_prompt):
+        if yesno(clone_prompt):
             git_url = '/'.join((cli.config.setup.baseurl, cli.args.fork))
             result = git_clone(git_url, cli.args.home, cli.config.setup.branch)
             if result != 0:
                 exit(1)
 
     # Offer to set `user.qmk_home` for them.
-    if cli.args.home != os.environ['QMK_HOME'] and question(home_prompt):
+    if cli.args.home != os.environ['QMK_HOME'] and yesno(home_prompt):
         cli.config['user']['qmk_home'] = str(cli.args.home.absolute())
         cli.write_config_option('user', 'qmk_home')
 
