@@ -24,9 +24,9 @@ def git_clone(url, destination, branch):
         for line in p.stdout:
             print(line, end='')
 
-    if p.returncode != 0:
-        cli.log.error('git clone exited %d', p.returncode)
-    else:
+    if p.returncode == 0:
         cli.log.info('Successfully cloned %s to %s!', url, destination)
-
-    return p.returncode
+        return True
+    else:
+        cli.log.error('git clone exited %d', p.returncode)
+        return False
