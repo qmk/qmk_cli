@@ -16,6 +16,32 @@ default_fork = 'qmk/' + default_repo
 default_branch = 'master'
 
 
+def git_upstream(destination):
+    """Add the qmk/qmk_firmware upstream to a qmk_firmware clone.
+    """
+    git_url = '/'.join((cli.config.setup.baseurl, default_fork))
+    git_cmd = [
+        'git',
+        '-C',
+        destination,
+        'remote',
+        'add',
+        'upstream',
+        git_url,
+    ]
+
+    with subprocess.Popen(git_cmd, stderr=subprocess.STDOUT, stdout=subprocess.PIPE, bufsize=1, universal_newlines=True, encoding='utf-8') as p:
+        for line in p.stdout:
+            print(line, end='')
+
+    if p.returncode == 0:
+        cli.log.info('Added %s as remote upstream.', git_url)
+        return True
+    else:
+        cli.log.error('%s exited %d', ' '.join(git_cmd), p.returncode)
+        return False
+
+
 @cli.argument('-n', '--no', arg_only=True, action='store_true', help='Answer no to all questions')
 @cli.argument('-y', '--yes', arg_only=True, action='store_true', help='Answer yes to all questions')
 @cli.argument('--baseurl', default=default_base, help='The URL all git operations start from. Default: %s' % default_base)
@@ -41,8 +67,10 @@ def setup(cli):
         cli.log.error('Could not find qmk_firmware!')
         if yesno(clone_prompt):
             git_url = '/'.join((cli.config.setup.baseurl, cli.args.fork))
-            result = git_clone(git_url, cli.args.home, cli.config.setup.branch)
-            if result != 0:
+
+            if git_clone(git_url, cli.args.home, cli.config.setup.branch):
+                git_upstream(cli.args.home)
+            else:
                 exit(1)
 
     # Offer to set `user.qmk_home` for them.
