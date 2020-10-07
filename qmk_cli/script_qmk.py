@@ -76,9 +76,13 @@ def main():
         print('Please upgrade to Python 3.6 or later.')
 
     if 'windows' in platform.platform().lower():
-        if 'mingw64' not in sys.executable or 'mingw64' not in os.environ.get('MSYSTEM_PREFIX', ''):
-            print('Warning: It seems you are not using the MINGW64 terminal.')
-            print('While the MSYS one can work, too, we recommend/support you start "MSYS2 MinGW 64-bit".\n')
+        msystem = os.environ.get('MSYSTEM', '')
+
+        if 'mingw64' not in sys.executable or 'MINGW64' not in msystem:
+            print('ERROR: It seems you are not using the MINGW64 terminal.')
+            print('Please close this terminal and open a new MSYS2 MinGW 64-bit terminal.')
+            print('Python: %s, MSYSTEM: %s' % (sys.executable, msystem))
+            exit(1)
 
     # Environment setup
     import qmk_cli
