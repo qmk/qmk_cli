@@ -47,6 +47,7 @@ if __name__ == "__main__":
             "hjson",
             "milc>=1.0.8",
             "nose2",
+            "pygments",
             "yapf"
         ],
     )
