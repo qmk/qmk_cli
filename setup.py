@@ -45,7 +45,7 @@ if __name__ == "__main__":
             "colorama",
             "flake8",
             "hjson",
-            "milc",
+            "milc>=1.0.8",
             "nose2",
             "yapf"
         ],
