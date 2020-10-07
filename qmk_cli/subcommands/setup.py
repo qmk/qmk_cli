@@ -80,7 +80,7 @@ def setup(cli):
 
     # Run `qmk_firmware/bin/qmk doctor` to check the rest of the environment out
     qmk_bin = cli.args.home / 'bin/qmk'
-    doctor_cmd = [sys.executable, qmk_bin, 'doctor']
+    doctor_cmd = [sys.executable, qmk_bin.as_posix(), 'doctor']
 
     if cli.args.yes:
         doctor_cmd.append('--yes')
