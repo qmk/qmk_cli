@@ -7,8 +7,8 @@ import sys
 from pathlib import Path
 
 from milc import cli
+from milc.questions import question
 from qmk_cli.git import git_clone
-from qmk_cli.helpers import question
 
 default_base = 'https://github.com'
 default_repo = 'qmk_firmware'

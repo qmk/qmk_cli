@@ -40,12 +40,12 @@ if __name__ == "__main__":
         ],
         requires_python=metadata['requires-python'],
         install_requires=[
-            #"milc", #FIXME(skullydazed): Included in the repo for now.
             "appdirs",
             "argcomplete",
             "colorama",
             "flake8",
             "hjson",
+            "milc",
             "nose2",
             "yapf"
         ],

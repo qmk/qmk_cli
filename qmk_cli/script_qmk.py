@@ -4,12 +4,12 @@
 This program can be run from anywhere, with or without a qmk_firmware repository. If a qmk_firmware repository can be located we will use that to augment our available subcommands.
 """
 import argparse
+import platform
 import os
 import subprocess
 import sys
 from functools import lru_cache
 from pathlib import Path
-import platform
 
 import milc
 
