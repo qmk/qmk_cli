@@ -65,7 +65,7 @@ def setup(cli):
         cli.log.info('Found qmk_firmware at %s.', str(cli.args.home))
     else:
         cli.log.error('Could not find qmk_firmware!')
-        if yesno(clone_prompt):
+        if yesno(clone_prompt, default=True):
             git_url = '/'.join((cli.config.setup.baseurl, cli.args.fork))
 
             if git_clone(git_url, cli.args.home, cli.config.setup.branch):
@@ -74,7 +74,7 @@ def setup(cli):
                 exit(1)
 
     # Offer to set `user.qmk_home` for them.
-    if cli.args.home != os.environ['QMK_HOME'] and yesno(home_prompt):
+    if cli.args.home != os.environ['QMK_HOME'] and yesno(home_prompt, default=True):
         cli.config['user']['qmk_home'] = str(cli.args.home.absolute())
         cli.write_config_option('user', 'qmk_home')
 
