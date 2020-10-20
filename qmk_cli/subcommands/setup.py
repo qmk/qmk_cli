@@ -74,7 +74,7 @@ def setup(cli):
                 exit(1)
 
     # Offer to set `user.qmk_home` for them.
-    if cli.args.home != os.environ['QMK_HOME'] and yesno(home_prompt):
+    if cli.args.home != Path(os.environ['QMK_HOME']) and yesno(home_prompt):
         cli.config['user']['qmk_home'] = str(cli.args.home.absolute())
         cli.write_config_option('user', 'qmk_home')
 
