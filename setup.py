@@ -43,11 +43,8 @@ if __name__ == "__main__":
             "appdirs",
             "argcomplete",
             "colorama",
-            "flake8",
             "hjson",
             "milc>=1.0.8",
-            "nose2",
             "pygments",
-            "yapf"
         ],
     )
