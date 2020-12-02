@@ -27,7 +27,7 @@ jobs:
     - name: Install Python dependencies
       run: |
         python3 -m pip install wheel
-        echo "::add-path::$HOME/.local/bin"
+        echo "$HOME/.local/bin" >> $GITHUB_PATH
 
     - name: Install QMK CLI from source
       run: |
