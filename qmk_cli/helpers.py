@@ -30,7 +30,8 @@ def find_broken_requirements(requirements):
             if '#' in line:
                 line = line.split('#')[0]
 
-            module_name = module_import_name = line.split('=')[0] if '=' in line else line
+            module_name = line.split('=')[0] if '=' in line else line
+            module_import_name = module_name.replace('-', '_')
 
             # Not every module is importable by its own name.
             if module_name == "pep8-naming":
