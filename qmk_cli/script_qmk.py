@@ -34,6 +34,7 @@ def main():
         print('Please upgrade to Python 3.6 or later.')
 
     if 'windows' in platform().lower():
+        os.system("") # workaround for ansi colors - https://stackoverflow.com/a/51524239
         msystem = os.environ.get('MSYSTEM', '')
 
         if 'mingw64' not in sys.executable or 'MINGW64' not in msystem:
