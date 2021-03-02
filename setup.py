@@ -46,7 +46,7 @@ if __name__ == "__main__":
             "dotty-dict",
             "flake8",
             "hjson",
-            "jsonschema",
+            "jsonschema>=3",
             "milc>=1.0.8",
             "nose2",
             "pygments",
