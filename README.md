@@ -14,4 +14,9 @@ A program to help users work with [QMK Firmware](https://qmk.fm/).
 
 # Quickstart
 
-To be written.
+Full documentation: <https://docs.qmk.fm/#/tutorial>
+
+Basic steps:
+
+* `python3 -m pip install qmk`
+* `qmk setup`
