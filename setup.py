@@ -38,7 +38,7 @@ if __name__ == "__main__":
             'Topic :: Software Development',
             'Topic :: Utilities',
         ],
-        requires_python=metadata['requires-python'],
+        python_requires=metadata['requires-python'],
         install_requires=[
             "appdirs",
             "argcomplete",
