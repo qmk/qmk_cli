@@ -53,10 +53,9 @@ jobs:
         update: true
         install: git mingw-w64-x86_64-toolchain mingw-w64-x86_64-python-pip
 
-    - name: (MSYS2) Upgrade pip and setuptools and install wheel
+    - name: (MSYS2) Install Python dependencies
       shell: msys2 {0}
       run: |
-        python3 -m pip install --upgrade pip setuptools
         python3 -m pip install wheel
 
     - name: (MSYS2) Install QMK CLI from source
