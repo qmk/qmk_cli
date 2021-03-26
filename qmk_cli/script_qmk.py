@@ -4,6 +4,7 @@
 This program can be run from anywhere, with or without a qmk_firmware repository. If a qmk_firmware repository can be located we will use that to augment our available subcommands.
 """
 import os
+import shlex
 import subprocess
 import sys
 from platform import platform
@@ -11,8 +12,9 @@ from traceback import print_exc
 
 import milc
 import milc.subcommand.config  # noqa
+from milc.questions import yesno
 
-from .helpers import find_broken_requirements, find_qmk_firmware, in_qmk_firmware
+from .helpers import broken_module_imports, find_qmk_firmware
 
 milc.EMOJI_LOGLEVELS['INFO'] = '{fg_blue}Ψ{style_reset_all}'
 
@@ -24,14 +26,25 @@ def qmk_main(cli):
     cli.print_help()
 
 
+def run_cmd(*command):
+    """Run a command in a subshell.
+    """
+    if 'windows' in milc.cli.platform.lower():
+        safecmd = map(shlex.quote, command)
+        safecmd = ' '.join(safecmd)
+        command = [os.environ['SHELL'], '-c', safecmd]
+
+    return subprocess.run(command)
+
+
 # Python setuptools entrypoint
 def main():
     """Setup the environment before dispatching to the entrypoint.
     """
     # Warn if they use an outdated python version
-    if sys.version_info < (3, 6):
+    if sys.version_info < (3, 7):
         print('Warning: Your Python version is out of date! Some subcommands may not work!')
-        print('Please upgrade to Python 3.6 or later.')
+        print('Please upgrade to Python 3.7 or later.')
 
     if 'windows' in platform().lower():
         msystem = os.environ.get('MSYSTEM', '')
@@ -57,39 +70,41 @@ def main():
         os.chdir(str(qmk_firmware))
 
         # Check to make sure we have all the requirements
-        broken_modules = find_broken_requirements('requirements.txt')
-        broken_dev_modules = find_broken_requirements('requirements-dev.txt') if milc.cli.config.user.developer else []
+        broken_modules, broken_dev_modules = broken_module_imports()
+        msg_install = 'Please run `python3 -m pip install -r %s` to install required python dependencies.'
 
-        if broken_modules or broken_dev_modules:
-            for module in broken_modules + broken_dev_modules:
-                print('Could not find module %s!' % module)
-
-            msg_install = 'Please run `python3 -m pip install -r %s` to install required python dependencies.'
-            if broken_modules:
+        if broken_modules:
+            if yesno('Would you like to install the required Python modules?'):
+                run_cmd(sys.executable, '-m', 'pip', 'install', '-r', 'requirements.txt')
+            else:
                 print()
-                print(msg_install % (qmk_firmware / 'requirements.txt',))
-
-            if broken_dev_modules:
+                print(msg_install % (os.environ['QMK_HOME'] + '/requirements.txt',))
                 print()
-                print(msg_install % (qmk_firmware / 'requirements-dev.txt',))
+                exit(1)
+
+        if broken_dev_modules:
+            if yesno('Would you like to install the required developer Python modules?'):
+                run_cmd(sys.executable, '-m', 'pip', 'install', '-r', 'requirements.txt')
+            else:
+                print()
+                print(msg_install % (os.environ['QMK_HOME'] + '/requirements-dev.txt',))
                 print('You can also turn off developer mode: qmk config user.developer=None')
+                print()
+                exit(1)
 
-            print()
+        # Environment looks good, include the qmk_firmware subcommands
+        sys.path.append(str(qmk_firmware / 'lib/python'))
 
-        else:
-            # Environment looks good, include the qmk_firmware subcommands
-            sys.path.append(str(qmk_firmware / 'lib/python'))
+        try:
+            import qmk.cli  # noqa
 
-            try:
-                import qmk.cli
+        except ImportError as e:
+            if qmk_firmware.name != 'qmk_firmware':
+                print('Warning: %s does not end in "qmk_firmware". Do you need to set QMK_HOME to "%s/qmk_firmware"?' % (qmk_firmware, qmk_firmware))
 
-            except ImportError as e:
-                if qmk_firmware.name != 'qmk_firmware':
-                    print('Warning: %s does not end in "qmk_firmware". Do you need to set QMK_HOME to "%s/qmk_firmware"?' % (qmk_firmware, qmk_firmware))
-
-                print('Error: %s: %s', (e.__class__.__name__, e))
-                print_exc()
-                sys.exit(1)
+            print('Error: %s: %s', (e.__class__.__name__, e))
+            print_exc()
+            sys.exit(1)
 
     # Call the entrypoint
     return_code = milc.cli()

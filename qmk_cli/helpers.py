@@ -8,6 +8,25 @@ from pathlib import Path
 from milc import cli
 
 
+def broken_module_imports():
+    """Make sure we can import all the python modules.
+    """
+    broken_modules = find_broken_requirements('requirements.txt')
+    broken_dev_modules = find_broken_requirements('requirements-dev.txt') if cli.config.user.developer else []
+    to_return = [False, False]
+
+    if broken_modules:
+        to_return[0] = True
+
+    if broken_dev_modules:
+        to_return[1] = True
+
+    for module in broken_modules + broken_dev_modules:
+        print('Could not find module %s!' % module)
+
+    return to_return
+
+
 def find_broken_requirements(requirements):
     """ Check if the modules in the given requirements.txt are available.
 
@@ -62,7 +81,6 @@ def find_qmk_firmware():
         return path
 
     return Path.home() / 'qmk_firmware'
-
 
 
 def in_qmk_firmware():
