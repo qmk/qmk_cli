@@ -74,18 +74,17 @@ def setup(cli):
                 exit(1)
 
     # Offer to set `user.qmk_home` for them.
-    if cli.args.home != Path(os.environ['QMK_HOME']) and yesno(home_prompt):
+    if str(cli.args.home) != os.environ['QMK_HOME'] and yesno(home_prompt):
         cli.config['user']['qmk_home'] = str(cli.args.home.absolute())
         cli.write_config_option('user', 'qmk_home')
 
-    # Run `qmk_firmware/bin/qmk doctor` to check the rest of the environment out
-    qmk_bin = cli.args.home / 'bin/qmk'
-    doctor_cmd = [sys.executable, qmk_bin.as_posix(), 'doctor']
-
-    if cli.args.yes:
-        doctor_cmd.append('--yes')
+    # Run `qmk doctor` to check the rest of the environment out
+    doctor_command = [sys.executable, sys.argv[0], 'doctor']
 
     if cli.args.no:
-        doctor_cmd.append('--no')
+        doctor_command.append('--no')
 
-    subprocess.run(doctor_cmd)
+    if cli.args.yes:
+        doctor_command.append('--yes')
+
+    cli.run(doctor_command, capture_output=False)

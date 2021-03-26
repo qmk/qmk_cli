@@ -7,12 +7,12 @@ metadata = setup_cfg['metadata']
 
 if __name__ == "__main__":
     with open('README.md', encoding='utf-8') as readme_file:
-        long_description=readme_file.read()
+        long_description = readme_file.read()
     setup(
         name=metadata['dist-name'],
         description='A program to help users work with QMK Firmware.',
         entry_points={
-            'console_scripts': ['%s = %s' % l for l in setup_cfg['entry_points'].items()],
+            'console_scripts': ['%s = %s' % i for i in setup_cfg['entry_points'].items()],
         },
         license='MIT License',
         url=metadata['home-page'],
@@ -24,7 +24,7 @@ if __name__ == "__main__":
         long_description=long_description,
         long_description_content_type="text/markdown",
         packages=find_packages(),
-        py_modules = ['milc'],
+        py_modules=['milc'],
         classifiers=[
             'Development Status :: 3 - Alpha',
             'Environment :: Console',

@@ -16,7 +16,7 @@ def git_clone(url, destination, branch):
         '--recurse-submodules',
         '--branch=' + branch,
         url,
-        destination,
+        str(destination),
     ]
     cli.log.debug('Git clone command: %s', git_clone)
 
