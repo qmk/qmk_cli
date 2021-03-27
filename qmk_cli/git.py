@@ -20,13 +20,21 @@ def git_clone(url, destination, branch):
     ]
     cli.log.debug('Git clone command: %s', git_clone)
 
-    with subprocess.Popen(git_clone, stderr=subprocess.STDOUT, stdout=subprocess.PIPE, bufsize=1, universal_newlines=True, encoding='utf-8') as p:
-        for line in p.stdout:
-            print(line, end='')
+    try:
+        with subprocess.Popen(git_clone, stderr=subprocess.STDOUT, stdout=subprocess.PIPE, bufsize=1, universal_newlines=True, encoding='utf-8') as p:
+            for line in p.stdout:
+                print(line, end='')
+
+    except Exception as e:
+        git_cmd = ' '.join([s.replace(' ', r'\ ') for s in git_clone])
+
+        cli.log.error("Could not run '%s': %s: %s", git_cmd, e.__class__.__name__, e)
+        return False
 
     if p.returncode == 0:
         cli.log.info('Successfully cloned %s to %s!', url, destination)
         return True
+
     else:
         cli.log.error('git clone exited %d', p.returncode)
         return False

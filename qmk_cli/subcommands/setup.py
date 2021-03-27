@@ -42,6 +42,25 @@ def git_upstream(destination):
         return False
 
 
+def is_qmk_firmware(qmk_firmware):
+    """Returns True if the given Path() is a qmk_firmware clone.
+    """
+    paths = [
+        qmk_firmware,
+        qmk_firmware / 'Makefile',
+        qmk_firmware / 'requirements.txt',
+        qmk_firmware / 'requirements-dev.txt',
+        qmk_firmware / 'lib/python/qmk/cli/doctor.py'
+    ]
+
+    for path in paths:
+        if not path.exists():
+            cli.log.error('%s is not a qmk_firmware clone!', str(qmk_firmware))
+            return False
+
+    return True
+
+
 @cli.argument('-n', '--no', arg_only=True, action='store_true', help='Answer no to all questions')
 @cli.argument('-y', '--yes', arg_only=True, action='store_true', help='Answer yes to all questions')
 @cli.argument('--baseurl', default=default_base, help='The URL all git operations start from. Default: %s' % default_base)
@@ -61,8 +80,9 @@ def setup(cli):
         exit(1)
 
     # Check on qmk_firmware, and if it doesn't exist offer to check it out.
-    if (cli.args.home / 'Makefile').exists():
+    if is_qmk_firmware(cli.args.home):
         cli.log.info('Found qmk_firmware at %s.', str(cli.args.home))
+
     else:
         cli.log.error('Could not find qmk_firmware!')
         if yesno(clone_prompt):
