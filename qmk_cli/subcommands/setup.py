@@ -55,7 +55,6 @@ def is_qmk_firmware(qmk_firmware):
 
     for path in paths:
         if not path.exists():
-            cli.log.error('%s is not a qmk_firmware clone!', str(qmk_firmware))
             return False
 
     return True
@@ -83,10 +82,10 @@ def setup(cli):
     if is_qmk_firmware(cli.args.home):
         cli.log.info('Found qmk_firmware at %s.', str(cli.args.home))
 
-    elif qmk_firmware.exists():
-        path_str = str(qmk_firmware)
+    elif cli.args.home.exists():
+        path_str = str(cli.args.home)
 
-        if qmk_firmware.name != 'qmk_firmware':
+        if cli.args.home.name != 'qmk_firmware':
             cli.log.warning('Warning: %s does not end in "qmk_firmware". Did you mean to use "--home %s/qmk_firmware"?' % (path_str, path_str))
 
         cli.log.error("Path '%s' exists but is not a qmk_firmware clone!", path_str)
