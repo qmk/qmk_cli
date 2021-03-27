@@ -9,6 +9,7 @@ from pathlib import Path
 from milc import cli
 from milc.questions import yesno
 from qmk_cli.git import git_clone
+from qmk_cli.helpers import is_qmk_firmware
 
 default_base = 'https://github.com'
 default_repo = 'qmk_firmware'
@@ -40,24 +41,6 @@ def git_upstream(destination):
     else:
         cli.log.error('%s exited %d', ' '.join(git_cmd), p.returncode)
         return False
-
-
-def is_qmk_firmware(qmk_firmware):
-    """Returns True if the given Path() is a qmk_firmware clone.
-    """
-    paths = [
-        qmk_firmware,
-        qmk_firmware / 'Makefile',
-        qmk_firmware / 'requirements.txt',
-        qmk_firmware / 'requirements-dev.txt',
-        qmk_firmware / 'lib/python/qmk/cli/doctor.py'
-    ]
-
-    for path in paths:
-        if not path.exists():
-            return False
-
-    return True
 
 
 @cli.argument('-n', '--no', arg_only=True, action='store_true', help='Answer no to all questions')

@@ -14,7 +14,7 @@ import milc
 import milc.subcommand.config  # noqa
 from milc.questions import yesno
 
-from .helpers import broken_module_imports, find_qmk_firmware
+from .helpers import broken_module_imports, find_qmk_firmware, is_qmk_firmware
 
 milc.EMOJI_LOGLEVELS['INFO'] = '{fg_blue}Ψ{style_reset_all}'
 
@@ -65,7 +65,7 @@ def main():
     import qmk_cli.subcommands
 
     # Check out and initialize the qmk_firmware environment
-    if qmk_firmware.exists():
+    if is_qmk_firmware(qmk_firmware):
         # All subcommands are run relative to the qmk_firmware root to make it easier to use the right copy of qmk_firmware.
         os.chdir(str(qmk_firmware))
 

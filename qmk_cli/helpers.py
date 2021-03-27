@@ -8,6 +8,24 @@ from pathlib import Path
 from milc import cli
 
 
+def is_qmk_firmware(qmk_firmware):
+    """Returns True if the given Path() is a qmk_firmware clone.
+    """
+    paths = [
+        qmk_firmware,
+        qmk_firmware / 'quantum',
+        qmk_firmware / 'requirements.txt',
+        qmk_firmware / 'requirements-dev.txt',
+        qmk_firmware / 'lib/python/qmk/cli/doctor.py'
+    ]
+
+    for path in paths:
+        if not path.exists():
+            return False
+
+    return True
+
+
 def broken_module_imports():
     """Make sure we can import all the python modules.
     """
@@ -88,9 +106,7 @@ def in_qmk_firmware():
     """
     cur_dir = Path.cwd()
     while len(cur_dir.parents) > 0:
-        found_lib = cur_dir / 'lib/python/qmk/cli/__init__.py'
-        found_quantum = cur_dir / 'quantum'
-        if found_lib.is_file() and found_quantum.is_dir():
+        if is_qmk_firmware(cur_dir):
             return cur_dir
 
         # Move up a directory before the next iteration
