@@ -90,7 +90,7 @@ def setup(cli):
         cli.write_config_option('user', 'qmk_home')
 
     # Run `qmk doctor` to check the rest of the environment out
-    doctor_command = [sys.executable, sys.argv[0], 'doctor']
+    doctor_command = [sys.argv[0], 'doctor']
 
     if cli.args.no:
         doctor_command.append('--no')
