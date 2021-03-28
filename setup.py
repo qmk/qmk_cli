@@ -24,7 +24,7 @@ if __name__ == "__main__":
         long_description=long_description,
         long_description_content_type="text/markdown",
         packages=find_packages(),
-        py_modules=['milc'],
+        py_modules=['qmk_cli'],
         classifiers=[
             'Development Status :: 3 - Alpha',
             'Environment :: Console',
@@ -47,9 +47,9 @@ if __name__ == "__main__":
             "flake8",
             "hjson",
             "jsonschema>=3",
-            "milc>=1.0.8",
+            "milc>=1.3.0",
             "nose2",
             "pygments",
             "yapf"
-        ],
+        ]
     )
