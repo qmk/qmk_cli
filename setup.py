@@ -40,16 +40,6 @@ if __name__ == "__main__":
         ],
         python_requires=metadata['requires-python'],
         install_requires=[
-            "appdirs",
-            "argcomplete",
-            "colorama",
-            "dotty-dict",
-            "flake8",
-            "hjson",
-            "jsonschema>=3",
             "milc>=1.3.0",
-            "nose2",
-            "pygments",
-            "yapf"
         ]
     )
