@@ -30,7 +30,10 @@ def broken_module_imports():
     """Make sure we can import all the python modules.
     """
     broken_modules = find_broken_requirements('requirements.txt')
-    broken_dev_modules = find_broken_requirements('requirements-dev.txt') if cli.config.user.developer else []
+    broken_dev_modules = []
+    if cli.config.user.developer:
+        if len(sys.argv) == 1 or (len(sys.argv) > 1 and 'config' != sys.argv[1]):
+            broken_dev_modules = find_broken_requirements('requirements-dev.txt')
     to_return = [False, False]
 
     if broken_modules:
