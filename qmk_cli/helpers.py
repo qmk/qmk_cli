@@ -1,6 +1,7 @@
 """Useful helper functions.
 """
 import os
+import sys
 from functools import lru_cache
 from importlib.util import find_spec
 from pathlib import Path
@@ -32,7 +33,10 @@ def broken_module_imports():
     broken_modules = find_broken_requirements('requirements.txt')
     broken_dev_modules = []
     if cli.config.user.developer:
-        if len(sys.argv) == 1 or (len(sys.argv) > 1 and 'config' != sys.argv[1]):
+        args = sys.argv[1:]
+        while args and args[0][0] == '-':
+            del args[0]
+        if not args or args[0] != 'config':
             broken_dev_modules = find_broken_requirements('requirements-dev.txt')
     to_return = [False, False]
 
