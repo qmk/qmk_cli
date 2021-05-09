@@ -45,11 +45,13 @@ if __name__ == "__main__":
             "colorama",
             "dotty-dict",
             "flake8",
+            "hid",
             "hjson",
             "jsonschema>=3",
             "milc>=1.3.0",
             "nose2",
             "pygments",
+            "pyusb",
             "yapf"
         ]
     )
