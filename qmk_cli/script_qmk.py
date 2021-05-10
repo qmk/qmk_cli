@@ -14,7 +14,7 @@ import milc
 import milc.subcommand.config  # noqa
 from milc.questions import yesno
 
-from .helpers import broken_module_imports, find_qmk_firmware, is_qmk_firmware
+from .helpers import find_qmk_firmware, is_qmk_firmware
 
 milc.EMOJI_LOGLEVELS['INFO'] = '{fg_blue}Ψ{style_reset_all}'
 
@@ -68,31 +68,6 @@ def main():
     if is_qmk_firmware(qmk_firmware):
         # All subcommands are run relative to the qmk_firmware root to make it easier to use the right copy of qmk_firmware.
         os.chdir(str(qmk_firmware))
-
-        # Check to make sure we have all the requirements
-        broken_modules, broken_dev_modules = broken_module_imports()
-        msg_install = 'Please run `python3 -m pip install -r %s` to install required python dependencies.'
-
-        if broken_modules:
-            if yesno('Would you like to install the required Python modules?'):
-                run_cmd(sys.executable, '-m', 'pip', 'install', '-r', 'requirements.txt')
-            else:
-                print()
-                print(msg_install % (os.environ['QMK_HOME'] + '/requirements.txt',))
-                print()
-                exit(1)
-
-        if broken_dev_modules:
-            if yesno('Would you like to install the required developer Python modules?'):
-                run_cmd(sys.executable, '-m', 'pip', 'install', '-r', 'requirements.txt')
-            else:
-                print()
-                print(msg_install % (os.environ['QMK_HOME'] + '/requirements-dev.txt',))
-                print('You can also turn off developer mode: qmk config user.developer=None')
-                print()
-                exit(1)
-
-        # Environment looks good, include the qmk_firmware subcommands
         sys.path.append(str(qmk_firmware / 'lib/python'))
 
         try:

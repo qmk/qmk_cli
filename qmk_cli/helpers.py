@@ -26,60 +26,6 @@ def is_qmk_firmware(qmk_firmware):
     return True
 
 
-def broken_module_imports():
-    """Make sure we can import all the python modules.
-    """
-    broken_modules = find_broken_requirements('requirements.txt')
-    broken_dev_modules = find_broken_requirements('requirements-dev.txt') if cli.config.user.developer else []
-    to_return = [False, False]
-
-    if broken_modules:
-        to_return[0] = True
-
-    if broken_dev_modules:
-        to_return[1] = True
-
-    for module in broken_modules + broken_dev_modules:
-        print('Could not find module %s!' % module)
-
-    return to_return
-
-
-def find_broken_requirements(requirements):
-    """ Check if the modules in the given requirements.txt are available.
-
-    Args:
-
-        requirements
-            The path to a requirements.txt file
-
-    Returns a list of modules that couldn't be imported
-    """
-    with Path(requirements).open() as fd:
-        broken_modules = []
-
-        for line in fd.readlines():
-            line = line.strip().replace('<', '=').replace('>', '=')
-
-            if len(line) == 0 or line[0] == '#' or line.startswith('-r'):
-                continue
-
-            if '#' in line:
-                line = line.split('#')[0]
-
-            module_name = line.split('=')[0] if '=' in line else line
-            module_import_name = module_name.replace('-', '_')
-
-            # Not every module is importable by its own name.
-            if module_name == "pep8-naming":
-                module_import_name = "pep8ext_naming"
-
-            if not find_spec(module_import_name):
-                broken_modules.append(module_name)
-
-        return broken_modules
-
-
 @lru_cache(maxsize=2)
 def find_qmk_firmware():
     """Look for qmk_firmware in the usual places.
