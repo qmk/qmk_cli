@@ -9,13 +9,12 @@ A program to help users work with [QMK Firmware](https://qmk.fm/).
 * Use `qmk clone` to pull down anyone's `qmk_firmware` fork
 * Setup your build environment with `qmk setup`
 * Check that your environment is correctly setup with `qmk doctor`
-* Integrates with your qmk_firmware for additional functionality:
-    * `qmk c2json`
+* Integrates with qmk_firmware for additional functionality:
     * `qmk compile`
+    * `qmk console`
     * `qmk flash`
-    * `qmk json2c`
     * `qmk lint`
-    * `qmk new-keymap`
+    * ...and many more!
 
 # Quickstart
 
