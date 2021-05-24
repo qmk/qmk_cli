@@ -14,8 +14,10 @@ import milc
 import milc.subcommand.config  # noqa
 from milc.questions import yesno
 
+from . import __version__
 from .helpers import find_qmk_firmware, is_qmk_firmware
 
+milc.set_metadata(name='QMK CLI', author='QMK', version=__version__)
 milc.EMOJI_LOGLEVELS['INFO'] = '{fg_blue}Ψ{style_reset_all}'
 
 
@@ -56,8 +58,6 @@ def main():
             exit(1)
 
     # Environment setup
-    import qmk_cli
-    milc.cli.version = qmk_cli.__version__
     qmk_firmware = find_qmk_firmware()
     os.environ['QMK_HOME'] = str(qmk_firmware)
     os.environ['ORIG_CWD'] = os.getcwd()
