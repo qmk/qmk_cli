@@ -17,7 +17,7 @@ from milc.questions import yesno
 from . import __version__
 from .helpers import find_qmk_firmware, is_qmk_firmware
 
-milc.set_metadata(name='QMK CLI', author='QMK', version=__version__)
+milc.set_metadata(version=__version__)
 milc.EMOJI_LOGLEVELS['INFO'] = '{fg_blue}Ψ{style_reset_all}'
 
 

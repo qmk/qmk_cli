@@ -45,7 +45,6 @@ if __name__ == "__main__":
             "colorama",
             "dotty-dict",
             "flake8",
-            "halo",
             "hid",
             "hjson",
             "jsonschema>=3",
