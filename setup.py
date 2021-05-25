@@ -48,7 +48,7 @@ if __name__ == "__main__":
             "hid",
             "hjson",
             "jsonschema>=3",
-            "milc>=1.3.0",
+            "milc>=1.4.0",
             "nose2",
             "pygments",
             "pyusb",
