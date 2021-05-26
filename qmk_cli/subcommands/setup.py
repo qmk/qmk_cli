@@ -93,7 +93,7 @@ def setup(cli):
     # Run `qmk doctor` to check the rest of the environment out
     color = '--color' if cli.config.general.color else '--no-color'
     unicode = '--unicode' if cli.config.general.unicode else '--no-unicode'
-    doctor_command = [sys.argv[0], color, unicode, 'doctor']
+    doctor_command = [Path(sys.argv[0]).as_posix(), color, unicode, 'doctor']
 
     if cli.args.no:
         doctor_command.append('--no')
