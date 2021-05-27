@@ -11,7 +11,6 @@ from platform import platform
 from traceback import print_exc
 
 import milc
-import milc.subcommand.config  # noqa
 from milc.questions import yesno
 
 from . import __version__
@@ -19,6 +18,8 @@ from .helpers import find_qmk_firmware, is_qmk_firmware
 
 milc.set_metadata(version=__version__)
 milc.EMOJI_LOGLEVELS['INFO'] = '{fg_blue}Ψ{style_reset_all}'
+
+import milc.subcommand.config  # noqa, must come after milc.set_metadata()
 
 
 @milc.cli.entrypoint('CLI wrapper for running QMK commands.')
