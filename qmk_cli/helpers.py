@@ -16,7 +16,7 @@ def is_qmk_firmware(qmk_firmware):
         qmk_firmware / 'quantum',
         qmk_firmware / 'requirements.txt',
         qmk_firmware / 'requirements-dev.txt',
-        qmk_firmware / 'lib/python/qmk/cli/doctor.py'
+        qmk_firmware / 'lib/python/qmk/cli/__init__.py'
     ]
 
     for path in paths:
