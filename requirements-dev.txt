@@ -7,7 +7,7 @@ chardet==4.0.0
 colorama==0.4.4
 cryptography==3.4.7
 docutils==0.17.1
-idna==2.10
+idna==3.2
 importlib-metadata==4.5.0
 jeepney==0.6.0
 keyring==23.0.1
