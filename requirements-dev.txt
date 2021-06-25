@@ -24,6 +24,6 @@ SecretStorage==3.3.1
 six==1.16.0
 tqdm==4.61.1
 twine==3.4.1
-urllib3==1.26.5
+urllib3==1.26.6
 webencodings==0.5.1
 zipp==3.4.1
