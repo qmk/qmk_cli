@@ -45,16 +45,13 @@ jobs:
       run: |
         python setup.py sdist bdist_wheel
         twine upload dist/*
-    - name: Push Docker image to Docker Hub
-      runs-on: ubuntu-latest
-      steps:
-      - name: Log in to Docker Hub
-        uses: docker/login-action@v1.10.0
-        with:
-          username: ${{ secrets.DOCKER_HUB_USERNAME }}
-          password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
-      - name: Build and Push to Docker Hub
-        uses: docker/build-push-action@v2.5.0
-        with:
-          push: true
-          tags: qmkfm/qmk_cli:latest
+    - name: Log in to Docker Hub
+      uses: docker/login-action@v1.10.0
+      with:
+        username: ${{ secrets.DOCKER_HUB_USERNAME }}
+        password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
+    - name: Build and Push to Docker Hub
+      uses: docker/build-push-action@v2.5.0
+      with:
+        push: true
+        tags: qmkfm/qmk_cli:latest
