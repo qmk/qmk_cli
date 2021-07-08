@@ -58,7 +58,7 @@ if __name__ == "__main__":
             "pycodestyle==2.7.0",
             "pyflakes==2.3.1",
             "Pygments==2.9.0",
-            "pyrsistent==0.17.3",
+            "pyrsistent==0.18.0",
             "pyusb==1.2.0",
             "setuptools>=45",
             "six==1.16.0",
