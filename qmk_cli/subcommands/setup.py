@@ -83,6 +83,8 @@ def setup(cli):
                 git_upstream(cli.args.home)
             else:
                 exit(1)
+        else:
+            cli.log.warning('Not cloning qmk_firmware due to user input or --no flag.')
 
     # Offer to set `user.qmk_home` for them.
     if str(cli.args.home) != os.environ['QMK_HOME'] and yesno(home_prompt):
@@ -91,14 +93,15 @@ def setup(cli):
         cli.write_config_option('user', 'qmk_home')
 
     # Run `qmk doctor` to check the rest of the environment out
-    color = '--color' if cli.config.general.color else '--no-color'
-    unicode = '--unicode' if cli.config.general.unicode else '--no-unicode'
-    doctor_command = [Path(sys.argv[0]).as_posix(), color, unicode, 'doctor']
+    if cli.args.home.exists():
+        color = '--color' if cli.config.general.color else '--no-color'
+        unicode = '--unicode' if cli.config.general.unicode else '--no-unicode'
+        doctor_command = [Path(sys.argv[0]).as_posix(), color, unicode, 'doctor']
 
-    if cli.args.no:
-        doctor_command.append('--no')
+        if cli.args.no:
+            doctor_command.append('-n')
 
-    if cli.args.yes:
-        doctor_command.append('--yes')
+        if cli.args.yes:
+            doctor_command.append('-y')
 
-    cli.run(doctor_command, stdin=None, capture_output=False)
+        cli.run(doctor_command, stdin=None, capture_output=False)

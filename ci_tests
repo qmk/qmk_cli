@@ -1,0 +1,58 @@
+#!/usr/bin/env bash
+
+set -e
+#set -x
+
+ADVANCED=false
+TMPDIR=$(mktemp -d)
+QMK_HOME="$TMPDIR/qmk_firmware"
+export QMK_HOME
+
+for arg in $@; do
+    if [ "$arg" = "-a" ]; then
+        ADVANCED=true
+    fi
+done
+
+if [ $ADVANCED = true ]; then
+    echo "*** Running in advanced mode with tmp files in $TMPDIR"
+else
+    echo "*** Running in basic mode with tmp files in $TMPDIR"
+fi
+
+# Setup our virtualenv
+if [ -e .ci_venv ]; then
+    rm -rf .ci_venv
+fi
+
+python3 -m venv .ci_venv
+source .ci_venv/bin/activate
+
+# Install dependencies
+pip3 install -e .
+pip3 install -r requirements-dev.txt
+
+# Ensure that qmk works
+echo "*** Testing 'qmk clone -h'"
+qmk clone -h
+echo "*** Testing 'qmk config -a'"
+qmk config -a
+echo "*** Testing 'qmk setup -n'"
+qmk setup -n
+
+echo
+echo "*** Basic tests completed successfully!"
+
+# Run advanced test if requested
+if [ $ADVANCED = true ]; then
+    echo
+    echo "*** Testing 'qmk setup -y'"
+    qmk setup -y
+
+    echo
+    echo "*** Advanced tests completed successfully!"
+fi
+
+# Cleanup
+deactivate
+rm -rf .ci_venv $TMPDIR
