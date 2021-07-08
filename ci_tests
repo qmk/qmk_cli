@@ -29,7 +29,8 @@ python3 -m venv .ci_venv
 source .ci_venv/bin/activate
 
 # Install dependencies
-pip3 install -e .
+pip3 install wheel
+pip3 install .
 pip3 install -r requirements-dev.txt
 
 # Ensure that qmk works
