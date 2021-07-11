@@ -45,7 +45,7 @@ if __name__ == "__main__":
             "attrs==21.2.0",
             "colorama==0.4.4",
             "coverage==5.5",
-            "dotty-dict==1.3.0",
+            "qmk-dotty-dict==1.3.0.post1",
             "flake8==3.9.2",
             "halo==0.0.31",
             "hid==1.0.4",
