@@ -55,5 +55,6 @@ jobs:
     - name: Build and Push to Docker Hub
       uses: docker/build-push-action@v2.6.1
       with:
+        context: .
         push: true
         tags: qmkfm/qmk_cli:latest
