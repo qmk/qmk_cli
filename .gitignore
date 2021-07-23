@@ -106,3 +106,6 @@ venv.bak/
 
 # QMK
 qmk_firmware
+
+# Debian packages
+deb_dist
