@@ -2,11 +2,14 @@
 
 cli implementation of https://www.pjrc.com/teensy/hid_listen.html
 """
+from functools import lru_cache
 from pathlib import Path
+from platform import platform
 from threading import Thread
 from time import sleep, strftime
 
 from milc import cli
+from milc.questions import yesno
 
 LOG_COLOR = {
     'next': 0,
@@ -52,10 +55,61 @@ KNOWN_BOOTLOADERS = {
 }
 
 
+def install_deps():
+    """Install the necessary dependencies for qmk console.
+    """
+    this_platform = platform().lower()
+
+    if 'darwin' in this_platform or 'macos' in this_platform:
+        command = ['brew', 'install', 'hidapi']
+    elif 'linux' in this_platform:
+        command = ['sudo', 'apt', 'install', '-y', 'libhidapi-hidraw0', 'libusb-dev']
+    elif 'windows' in this_platform:
+        command = ['pacboy', 'sync', '--needed', '--noconfirm', '--disable-download-timeout', 'hidapi:x']
+    else:
+        cli.log.error('Unsupported platform: %s', this_platform)
+
+    if yesno("Would you like to run `%s` to install the necessary package?", ' '.join(command)):
+        cli.run(command, capture_output=False)
+        return True
+
+
+@lru_cache(maxsize=0)
+def import_usb_core():
+    """Attempts to import the usb.core module.
+    """
+    try:
+        import usb.core
+        return usb.core
+
+    except ImportError as e:
+        cli.log.error('Could not import usb.core: %s', e)
+
+        if install_deps():
+            return import_usb_core()
+
+        raise
+
+
+def import_hid():
+    """Attempts to import the hid module.
+    """
+    try:
+        import hid
+        return hid
+
+    except ImportError as e:
+        cli.log.error('Could not import hid: %s', e)
+
+        if install_deps():
+            return import_hid()
+
+        raise
+
+
 class MonitorDevice(object):
     def __init__(self, hid_device, numeric):
-        import hid
-        self.hid = hid
+        self.hid = import_hid()
         self.hid_device = hid_device
         self.numeric = numeric
         self.device = self.hid.Device(path=hid_device['path'])
@@ -95,6 +149,7 @@ class MonitorDevice(object):
 
 class FindDevices(object):
     def __init__(self, vid, pid, index, numeric):
+        self.hid = import_hid()
         self.vid = vid
         self.pid = pid
         self.index = index
