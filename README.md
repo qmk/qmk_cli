@@ -8,10 +8,11 @@ A program to help users work with [QMK Firmware](https://qmk.fm/).
 * Interact with your qmk_firmware tree from any location
 * Use `qmk clone` to pull down anyone's `qmk_firmware` fork
 * Setup your build environment with `qmk setup`
+* Use `qmk console` to get debugging information from your keyboard(s)
 * Check that your environment is correctly setup with `qmk doctor`
 * Integrates with qmk_firmware for additional functionality:
     * `qmk compile`
-    * `qmk console`
+    * `qmk info`
     * `qmk flash`
     * `qmk lint`
     * ...and many more!
