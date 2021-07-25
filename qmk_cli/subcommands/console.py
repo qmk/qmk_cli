@@ -6,9 +6,6 @@ from pathlib import Path
 from threading import Thread
 from time import sleep, strftime
 
-import hid
-import usb.core
-
 from milc import cli
 
 LOG_COLOR = {
@@ -57,9 +54,11 @@ KNOWN_BOOTLOADERS = {
 
 class MonitorDevice(object):
     def __init__(self, hid_device, numeric):
+        import hid
+        self.hid = hid
         self.hid_device = hid_device
         self.numeric = numeric
-        self.device = hid.Device(path=hid_device['path'])
+        self.device = self.hid.Device(path=hid_device['path'])
         self.current_line = ''
 
         cli.log.info('Console Connected: %(color)s%(manufacturer_string)s %(product_string)s{style_reset_all} (%(color)s%(vendor_id)04X:%(product_id)04X:%(index)d{style_reset_all})', hid_device)
@@ -90,7 +89,7 @@ class MonitorDevice(object):
 
                 cli.echo('%(ts)s%(color)s%(identifier)s:%(index)d{style_reset_all}: %(text)s' % message)
 
-            except hid.HIDException:
+            except self.hid.HIDException:
                 break
 
 
@@ -196,12 +195,14 @@ class FindDevices(object):
     def find_bootloaders(self):
         """Returns a list of available bootloader devices.
         """
+        import usb.core
+
         return list(filter(self.is_bootloader, usb.core.find(find_all=True)))
 
     def find_devices(self):
         """Returns a list of available teensy-style consoles.
         """
-        hid_devices = hid.enumerate()
+        hid_devices = self.hid.enumerate()
         devices = list(filter(self.is_console_hid, hid_devices))
 
         if not devices:
