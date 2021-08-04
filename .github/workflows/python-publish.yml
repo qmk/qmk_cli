@@ -108,3 +108,15 @@ jobs:
         apt-ftparchive release . > Release
         gpg --default-key F464DFD46C4DA3FD4D06234691B06358D2CAE8AE -abs -o Release.gpg Release
         gpg --default-key F464DFD46C4DA3FD4D06234691B06358D2CAE8AE --clearsign -o InRelease Release
+
+    # Upload the Debian repo to S3
+    - name: Upload Debian Repo
+      uses: jakejarvis/s3-sync-action@master
+      with:
+        args: --acl public-read --follow-symlinks --delete
+      env:
+        AWS_S3_BUCKET: qmk-debian
+        AWS_ACCESS_KEY_ID: ${{ secrets.SPACES_ACCESS_KEY }}
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.SPACES_SECRET_KEY }}
+        AWS_S3_ENDPOINT: https://nyc3.digitaloceanspaces.com
+        SOURCE_DIR: 'deb_repo'
