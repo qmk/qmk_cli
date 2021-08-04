@@ -18,6 +18,7 @@ jobs:
     steps:
     - uses: actions/checkout@v2.3.4
 
+    # Environment Setup
     - name: Set up Python
       uses: actions/setup-python@v2.2.2
       with:
@@ -41,12 +42,24 @@ jobs:
         cd ..
         dpkg -i dh-virtualenv_*.deb
 
+    - name: Install GPG secret key
+      run: |
+        echo -e "${{ secrets.QMK_GPG_SECRET_KEY }}" | gpg --batch --import
+        gpg --list-secret-keys --keyid-format LONG
+
     - name: Install python dependencies
       run: |
         python -m pip install --upgrade pip
         pip install setuptools wheel 
         pip install -r requirements-dev.txt
 
+    - name: Log in to Docker Hub
+      uses: docker/login-action@v1.10.0
+      with:
+        username: ${{ secrets.DOCKER_HUB_USERNAME }}
+        password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
+
+    # Build and upload new Python package
     - name: Bump version
       run: |
         git config --local user.email "hello@qmk.fm"
@@ -68,15 +81,30 @@ jobs:
         python setup.py sdist bdist_wheel
         twine upload dist/*
 
-    - name: Log in to Docker Hub
-      uses: docker/login-action@v1.10.0
-      with:
-        username: ${{ secrets.DOCKER_HUB_USERNAME }}
-        password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
-
+    # Build and upload new Docker container
     - name: Build and Push to Docker Hub
       uses: docker/build-push-action@v2.6.1
       with:
         context: .
         push: true
         tags: qmkfm/qmk_cli:latest
+
+    # Build Debian package
+    - name: Build debian package
+      run: |
+        python3 setup.py bdist_deb
+
+    # Create Debian repo
+    - name: Build debian package repository
+      run: |
+        mkdir -p deb_repo/dists/stable deb_repo/deb deb_repo/dsc
+        cp gpg_pubkey.txt deb_repo
+        cp deb_dist/*.deb deb_repo/deb
+        cp deb_dist/*.dsc deb_dist/*.orig.tar.gz deb_dist/*.debian.tar.xz deb_repo/dsc
+        cd deb_repo
+        apt-ftparchive packages deb > Packages
+        apt-ftparchive sources dsc > Sources
+        gzip -k {Packages,Sources}
+        apt-ftparchive release . > Release
+        gpg --default-key F464DFD46C4DA3FD4D06234691B06358D2CAE8AE -abs -o Release.gpg Release
+        gpg --default-key F464DFD46C4DA3FD4D06234691B06358D2CAE8AE --clearsign -o InRelease Release
