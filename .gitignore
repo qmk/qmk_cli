@@ -109,3 +109,5 @@ qmk_firmware
 
 # Debian packages
 deb_dist
+deb_repo
+qmk-*.tar.gz
