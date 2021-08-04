@@ -32,6 +32,7 @@ jobs:
         apt-get update
         apt-get install devscripts equivs sphinx-common sphinx-rtd-theme-common  # dh-virtualenv deps
         apt-get install debhelper dh-python python3-all  # stdeb deps
+        apt-get install dpkg-sig  # signing deps
 
     - name: Install dh-virtualenv
       run: |
@@ -98,7 +99,7 @@ jobs:
     # Create Debian repo
     - name: Build debian package repository
       run: |
-        mkdir -p deb_repo/dists/stable deb_repo/deb deb_repo/dsc
+        mkdir -p deb_repo/deb deb_repo/dsc
         cp gpg_pubkey.txt deb_repo
         cp deb_dist/*.deb deb_repo/deb
         cp deb_dist/*.dsc deb_dist/*.orig.tar.gz deb_dist/*.debian.tar.xz deb_repo/dsc
