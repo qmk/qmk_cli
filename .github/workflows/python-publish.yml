@@ -93,6 +93,7 @@ jobs:
     - name: Build debian package
       run: |
         python3 setup.py bdist_deb
+        dpkg-sig -s builder -k F464DFD46C4DA3FD4D06234691B06358D2CAE8AE deb_dist/*.deb
 
     # Create Debian repo
     - name: Build debian package repository
@@ -111,7 +112,7 @@ jobs:
 
     # Upload the Debian repo to S3
     - name: Upload Debian Repo
-      uses: jakejarvis/s3-sync-action@master
+      uses: jakejarvis/s3-sync-action@0.5.1
       with:
         args: --acl public-read --follow-symlinks --delete
       env:
