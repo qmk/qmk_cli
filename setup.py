@@ -53,7 +53,7 @@ if __name__ == "__main__":
             "jsonschema==3.2.0",
             "log-symbols==0.0.14",
             "mccabe==0.6.1",
-            "milc==1.4.2",
+            "milc==1.5.0",
             "nose2==0.10.0",
             "pycodestyle==2.7.0",
             "pyflakes==2.3.1",
