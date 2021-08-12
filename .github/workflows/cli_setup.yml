@@ -44,14 +44,13 @@ jobs:
     - name: (MSYS2) Install Python dependencies
       shell: msys2 {0}
       run: |
-        python3 -m pip install wheel
+        python3 -m pip install -U setuptools wheel
     - name: (MSYS2) Install QMK CLI from source
       shell: msys2 {0}
       run: |
-        python3 -m pip install build
+        python3 -m pip install -U build
         python3 -m build
-        cd ..
-        python3 -m pip install --force-reinstall --no-index --no-deps --find-links qmk_cli/dist qmk
+        python3 -m pip install dist/qmk-*.tar.gz
     - name: (MSYS2) Run qmk setup -y
       shell: msys2 {0}
       run: qmk setup -y
