@@ -46,11 +46,11 @@ We follow PEP517, you can install using [build](https://pypi.org/project/build/)
 
 Setup:
 
-    `python3 -m pip install build`
+    python3 -m pip install build
 
 Build:
 
-    `python3 -m build`
+    python3 -m build
 
 You can read more about working with PEP517 packages in the [Python Packaging User Guide](https://packaging.python.org/guides/distributing-packages-using-setuptools/#packaging-your-project).
 
