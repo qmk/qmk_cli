@@ -48,8 +48,8 @@ jobs:
     - name: (MSYS2) Install QMK CLI from source
       shell: msys2 {0}
       run: |
-        python3 -m pip install -r requirements.txt
-        python3 setup.py sdist bdist_wheel
+        python3 -m pip install build
+        python3 -m build
         cd ..
         python3 -m pip install --force-reinstall --no-index --no-deps --find-links qmk_cli/dist qmk
     - name: (MSYS2) Run qmk setup -y
