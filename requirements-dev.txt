@@ -1,10 +1,10 @@
 bleach==4.0.0
+build==0.6.0.post1
 bump2version==1.0.1
 bumpversion==0.6.0
 certifi==2021.5.30
 cffi==1.14.6
 chardet==4.0.0
-colorama==0.4.4
 cryptography==3.4.7
 docutils==0.17.1
 idna==2.10
@@ -14,7 +14,6 @@ keyring==23.0.1
 packaging==21.0
 pkginfo==1.7.1
 pycparser==2.20
-Pygments==2.9.0
 pyparsing==2.4.7
 readme-renderer==29.0
 requests==2.26.0
