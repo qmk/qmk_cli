@@ -58,3 +58,7 @@ jobs:
         context: .
         push: true
         tags: qmkfm/qmk_cli:latest
+    - name: Trigger OS package builds
+      run: ./trigger_packages
+      env:
+        QMK_BOT_TOKEN: ${{ secrets.QMK_BOT_TOKEN }}
