@@ -25,6 +25,8 @@ LOG_COLOR = {
 
 KNOWN_BOOTLOADERS = {
     # VID  ,  PID
+    ('03EB', '2045'): 'lufa-ms: LUFA Mass Storage Bootloader',
+    ('03EB', '2067'): 'qmk-hid: HID Bootloader',
     ('03EB', '2FEF'): 'atmel-dfu: ATmega16U2',
     ('03EB', '2FF0'): 'atmel-dfu: ATmega32U2',
     ('03EB', '2FF3'): 'atmel-dfu: ATmega16U4',
@@ -34,15 +36,15 @@ KNOWN_BOOTLOADERS = {
     ('03EB', '2FFB'): 'atmel-dfu: AT90USB128',
     ('03EB', '6124'): 'Microchip SAM-BA',
     ('0483', 'DF11'): 'stm32-dfu: STM32 BOOTLOADER',
-    ('16C0', '05DC'): 'USBasp: USBaspLoader',
-    ('16C0', '05DF'): 'bootloadHID: HIDBoot',
+    ('16C0', '05DC'): 'usbasploader: USBaspLoader',
+    ('16C0', '05DF'): 'bootloadhid: HIDBoot',
     ('16C0', '0478'): 'halfkay: Teensy Halfkay',
     ('1B4F', '9203'): 'caterina: Pro Micro 3.3V',
     ('1B4F', '9205'): 'caterina: Pro Micro 5V',
     ('1B4F', '9207'): 'caterina: LilyPadUSB',
     ('1C11', 'B007'): 'kiibohd: Kiibohd DFU Bootloader',
     ('1EAF', '0003'): 'stm32duino: Maple 003',
-    ('1FFB', '0101'): 'caterina: Polou A-Star 32U4 Bootloader',
+    ('1FFB', '0101'): 'caterina: Pololu A-Star 32U4 Bootloader',
     ('2341', '0036'): 'caterina: Arduino Leonardo',
     ('2341', '0037'): 'caterina: Arduino Micro',
     ('239A', '000C'): 'caterina: Adafruit Feather 32U4',
@@ -50,9 +52,7 @@ KNOWN_BOOTLOADERS = {
     ('239A', '000E'): 'caterina: Adafruit ItsyBitsy 32U4 5v',
     ('2A03', '0036'): 'caterina: Arduino Leonardo',
     ('2A03', '0037'): 'caterina: Arduino Micro',
-    ('314B', '0106'): 'apm32-dfu: APM32 DFU ISP Mode',
-    ('03EB', '2067'): 'qmk-hid: HID Bootloader',
-    ('03EB', '2045'): 'lufa-ms: LUFA Mass Storage Bootloader'
+    ('314B', '0106'): 'apm32-dfu: APM32 DFU ISP Mode'
 }
 
 
