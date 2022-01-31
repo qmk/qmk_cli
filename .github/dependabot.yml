@@ -7,9 +7,9 @@ updates:
     directory: "/"
     schedule:
       interval: "daily"
+    reviewers:
+      - "qmk/collaborators"
   - package-ecosystem: "pip" # See documentation for possible values
     directory: "/" # Location of package manifests
     schedule:
       interval: "daily"
-    reviewers:
-      - "qmk/collaborators"
