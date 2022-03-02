@@ -17,7 +17,7 @@ jobs:
         python-version: [3.7, 3.8, 3.9]
 
     steps:
-    - uses: actions/checkout@v2.4.0
+    - uses: actions/checkout@v3
 
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v3
@@ -33,7 +33,7 @@ jobs:
       QMK_HOME: $HOME/qmk_firmware
 
     steps:
-    - uses: actions/checkout@v2.4.0
+    - uses: actions/checkout@v3
 
     - name: (MSYS2) Setup and install dependencies
       uses: msys2/setup-msys2@v2
