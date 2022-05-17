@@ -39,7 +39,7 @@ jobs:
       uses: msys2/setup-msys2@v2
       with:
         update: true
-        install: git mingw-w64-x86_64-toolchain mingw-w64-x86_64-python-pip
+        install: git mingw-w64-x86_64-toolchain mingw-w64-x86_64-python-pip mingw-w64-x86_64-python-pillow
 
     - name: (MSYS2) Install Python dependencies
       shell: msys2 {0}
