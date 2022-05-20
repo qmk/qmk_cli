@@ -7,7 +7,7 @@ from milc import cli
 from qmk_cli.helpers import is_qmk_firmware
 
 
-@cli.argument('var', default=None, nargs='?', help='Optional variable to query')
+@cli.argument('var', arg_only=True, default=None, nargs='?', help='Optional variable to query')
 @cli.subcommand('Prints environment information.')
 def env(cli):
     home = os.environ.get('QMK_HOME', "")
