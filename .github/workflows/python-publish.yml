@@ -48,7 +48,7 @@ jobs:
         python3 -m build
         twine upload dist/*
     - name: Log in to Docker Hub
-      uses: docker/login-action@v2.0.0
+      uses: docker/login-action@v2.1.0
       with:
         username: ${{ secrets.DOCKER_HUB_USERNAME }}
         password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
