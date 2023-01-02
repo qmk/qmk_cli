@@ -104,4 +104,4 @@ def setup(cli):
         if cli.args.yes:
             doctor_command.append('-y')
 
-        cli.run(doctor_command, stdin=None, capture_output=False)
+        cli.run(doctor_command, stdin=None, capture_output=False, cwd=cli.args.home)
