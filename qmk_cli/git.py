@@ -41,21 +41,21 @@ def git_clone(url, destination, branch):
 
 
 def git_init(destination, branch):
-    git_clone = [
+    git_init = [
         'git',
         'init',
         '--initial-branch=' + branch,
         str(destination),
     ]
-    cli.log.debug('Git clone command: %s', git_clone)
+    cli.log.debug('Git init command: %s', git_init)
 
     try:
-        with subprocess.Popen(git_clone, stderr=subprocess.STDOUT, stdout=subprocess.PIPE, bufsize=1, universal_newlines=True, encoding='utf-8') as p:
+        with subprocess.Popen(git_init, stderr=subprocess.STDOUT, stdout=subprocess.PIPE, bufsize=1, universal_newlines=True, encoding='utf-8') as p:
             for line in p.stdout:
                 print(line, end='')
 
     except Exception as e:
-        git_cmd = ' '.join([s.replace(' ', r'\ ') for s in git_clone])
+        git_cmd = ' '.join([s.replace(' ', r'\ ') for s in git_init])
 
         cli.log.error("Could not run '%s': %s: %s", git_cmd, e.__class__.__name__, e)
         return False
