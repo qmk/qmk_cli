@@ -8,39 +8,13 @@ from pathlib import Path
 
 from milc import cli
 from milc.questions import yesno
-from qmk_cli.git import git_clone
+from qmk_cli.git import git_clone, git_init, git_upstream, git_check_repo
 from qmk_cli.helpers import is_qmk_firmware
 
 default_base = 'https://github.com'
 default_repo = 'qmk_firmware'
 default_fork = 'qmk/' + default_repo
 default_branch = 'master'
-
-
-def git_upstream(destination):
-    """Add the qmk/qmk_firmware upstream to a qmk_firmware clone.
-    """
-    git_url = '/'.join((cli.args.baseurl, default_fork))
-    git_cmd = [
-        'git',
-        '-C',
-        destination,
-        'remote',
-        'add',
-        'upstream',
-        git_url,
-    ]
-
-    with subprocess.Popen(git_cmd, stderr=subprocess.STDOUT, stdout=subprocess.PIPE, bufsize=1, universal_newlines=True, encoding='utf-8') as p:
-        for line in p.stdout:
-            print(line, end='')
-
-    if p.returncode == 0:
-        cli.log.info('Added %s as remote upstream.', git_url)
-        return True
-    else:
-        cli.log.error('%s exited %d', ' '.join(git_cmd), p.returncode)
-        return False
 
 
 @cli.argument('-n', '--no', arg_only=True, action='store_true', help='Answer no to all questions')
@@ -54,6 +28,7 @@ def setup(cli):
     """Guide the user through setting up their QMK environment.
     """
     clone_prompt = 'Would you like to clone {fg_cyan}%s{fg_reset} to {fg_cyan}%s{fg_reset}?' % (cli.args.fork, shlex.quote(str(cli.args.home)))
+    init_prompt = 'Would you like to fix {fg_cyan}%s{fg_reset} to be a valid {fg_cyan}%s{fg_reset} repo?' % (shlex.quote(str(cli.args.home)), cli.args.fork)
     home_prompt = 'Would you like to set {fg_cyan}%s{fg_reset} as your QMK home?' % (shlex.quote(str(cli.args.home)),)
 
     # Sanity checks
@@ -65,7 +40,8 @@ def setup(cli):
     if is_qmk_firmware(cli.args.home):
         cli.log.info('Found qmk_firmware at %s.', str(cli.args.home))
 
-    elif cli.args.home.exists():
+    # Exists (but not an empty dir)
+    elif cli.args.home.exists() and any(cli.args.home.iterdir()):
         path_str = str(cli.args.home)
 
         if cli.args.home.name != 'qmk_firmware':
@@ -80,11 +56,23 @@ def setup(cli):
             git_url = '/'.join((cli.args.baseurl, cli.args.fork))
 
             if git_clone(git_url, cli.args.home, cli.args.branch):
-                git_upstream(cli.args.home)
+                git_upstream(cli.args.home, cli.args.baseurl, default_fork, 'upstream')
             else:
                 exit(1)
         else:
             cli.log.warning('Not cloning qmk_firmware due to user input or --no flag.')
+
+    # Fix zip?
+    if not git_check_repo(cli.args.home):
+        cli.log.error("Path '%s' exists but is not a valid git repo!", str(cli.args.home))
+        if yesno(init_prompt):
+            if git_init(cli.args.home, cli.args.branch):
+                git_upstream(cli.args.home, cli.args.baseurl, cli.args.fork, 'origin')
+                git_upstream(cli.args.home, cli.args.baseurl, default_fork, 'upstream')
+            else:
+                exit(1)
+        else:
+            cli.log.warning('Not fixing qmk_firmware due to user input or --no flag.')
 
     # Offer to set `user.qmk_home` for them.
     if str(cli.args.home) != os.environ['QMK_HOME'] and yesno(home_prompt):
@@ -104,4 +92,4 @@ def setup(cli):
         if cli.args.yes:
             doctor_command.append('-y')
 
-        cli.run(doctor_command, stdin=None, capture_output=False)
+        cli.run(doctor_command, stdin=None, capture_output=False, cwd=cli.args.home)
