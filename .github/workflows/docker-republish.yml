@@ -28,7 +28,7 @@ jobs:
         username: ${{ secrets.DOCKER_HUB_USERNAME }}
         password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
     - name: Build and Push to Docker Hub
-      uses: docker/build-push-action@v3.2.0
+      uses: docker/build-push-action@v3.3.0
       with:
         context: .
         push: true
