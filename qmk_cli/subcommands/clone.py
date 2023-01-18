@@ -23,7 +23,8 @@ def clone(cli):
     qmk_firmware = Path(cli.args.destination)
     git_url = '/'.join((cli.args.baseurl, cli.args.fork))
 
-    if qmk_firmware.exists():
+    # Exists (but not an empty dir)
+    if qmk_firmware.exists() and any(qmk_firmware.iterdir()):
         cli.log.error('Destination already exists: %s', cli.args.destination)
         exit(1)
 

@@ -65,7 +65,8 @@ def setup(cli):
     if is_qmk_firmware(cli.args.home):
         cli.log.info('Found qmk_firmware at %s.', str(cli.args.home))
 
-    elif cli.args.home.exists():
+    # Exists (but not an empty dir)
+    elif cli.args.home.exists() and any(cli.args.home.iterdir()):
         path_str = str(cli.args.home)
 
         if cli.args.home.name != 'qmk_firmware':
