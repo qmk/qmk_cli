@@ -1,4 +1,4 @@
-FROM qmkfm/base_container
+FROM ghcr.io/qmk/qmk_base_container:latest
 
 # Copy package in
 ADD dist /tmp/dist

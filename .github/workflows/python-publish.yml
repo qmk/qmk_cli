@@ -57,7 +57,10 @@ jobs:
       with:
         context: .
         push: true
-        tags: qmkfm/qmk_cli:latest
+        platforms: linux/amd64,linux/arm64
+        tags: |
+          ghcr.io/qmk/qmk_cli:latest
+          qmkfm/qmk_cli:latest
     - name: Trigger OS package builds
       run: ./trigger_packages
       env:
