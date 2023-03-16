@@ -56,8 +56,11 @@ jobs:
       uses: docker/build-push-action@v4.0.0
       with:
         context: .
+        platforms: linux/amd64,linux/arm64
         push: true
-        tags: qmkfm/qmk_cli:latest
+        tags: |
+          ghcr.io/qmk/qmk_cli:latest
+          qmkfm/qmk_cli:latest
     - name: Trigger OS package builds
       run: ./trigger_packages
       env:
