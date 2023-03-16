@@ -7,7 +7,25 @@ on:
   pull_request:
 
 jobs:
+  test_cli_base_container:
+    runs-on: ubuntu-latest
+    container: ghcr.io/qmk/qmk_base_container
+
+    env:
+      QMK_HOME: ~/qmk_firmware
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Install dependencies
+      run: apt-get update && apt-get install -y python3-venv
+
+    - name: Run ci_tests
+      run: ./ci_tests -a
+
   test_cli_linux_macos:
+    needs: test_cli_base_container
+
     runs-on: ${{ matrix.os }}
     env:
       QMK_HOME: ~/qmk_firmware
@@ -28,6 +46,8 @@ jobs:
       run: ./ci_tests -a
 
   test_cli_win:
+    needs: test_cli_base_container
+
     runs-on: windows-latest
     env:
       QMK_HOME: $HOME/qmk_firmware
@@ -54,19 +74,3 @@ jobs:
     - name: (MSYS2) Run qmk setup -y
       shell: msys2 {0}
       run: qmk setup -y
-
-  test_cli_base_container:
-    runs-on: ubuntu-latest
-    container: ghcr.io/qmk/qmk_base_container
-
-    env:
-      QMK_HOME: ~/qmk_firmware
-
-    steps:
-    - uses: actions/checkout@v3
-
-    - name: Install dependencies
-      run: apt-get update && apt-get install -y python3-venv
-
-    - name: Run ci_tests
-      run: ./ci_tests -a
