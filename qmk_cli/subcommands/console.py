@@ -142,7 +142,7 @@ class MonitorDevice(object):
                 message['identifier'] = ':'.join(identifier)
                 message['ts'] = '{style_dim}{fg_green}%s{style_reset_all} ' % (strftime(cli.config.general.datetime_fmt),) if cli.args.timestamp else ''
                 message['text'] = message['text'].replace('%', '%%')
-                cli.echo('%(ts)s%(color)s%(identifier)s:%(index)d{style_reset_all}: %(text)s', **message)
+                cli.echo('%(ts)s%(color)s%(identifier)s:%(index)d{style_reset_all}: %(text)s' % message)
 
             except self.hid.HIDException:
                 break
