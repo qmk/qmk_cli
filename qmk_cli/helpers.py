@@ -44,6 +44,10 @@ def find_qmk_firmware():
             return path.resolve()
         return path
 
+    hidden_home = Path.home() / '.qmk_firmware'
+    if hidden_home.exists():
+        return hidden_home
+
     return Path.home() / 'qmk_firmware'
 
 
