@@ -1,3 +1,3 @@
 """A program to help you work with qmk_firmware."""
 
-__version__ = '1.1.3'
+__version__ = '1.1.4'
