@@ -10,6 +10,8 @@ import sys
 from platform import platform
 from traceback import print_exc
 
+from . import switch_to_venv # noqa, intentionally unused
+
 import milc
 
 from . import __version__
