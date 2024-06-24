@@ -32,7 +32,10 @@ jobs:
     strategy:
       matrix:
         os: [macos-latest, ubuntu-latest]
-        python-version: ['3.7', '3.8', '3.9', '3.10', '3.11', '3.12']
+        python-version: ['3.9', '3.10', '3.11', '3.12']
+        include:
+          - os: macos-13
+            python-version: '3.9'
 
     steps:
     - uses: actions/checkout@v4
@@ -59,16 +62,17 @@ jobs:
       uses: msys2/setup-msys2@v2
       with:
         update: true
-        install: git mingw-w64-x86_64-toolchain mingw-w64-x86_64-python-pip mingw-w64-x86_64-python-pillow mingw-w64-x86_64-rust
+        install: git mingw-w64-x86_64-toolchain mingw-w64-x86_64-python-pip mingw-w64-x86_64-python-build mingw-w64-x86_64-python-pillow mingw-w64-x86_64-rust
 
+    # Upgrade pip due to msys packaging + pypa/build/pull/736 issues
     - name: (MSYS2) Install Python dependencies
       shell: msys2 {0}
       run: |
-        python3 -m pip install -U setuptools wheel
+        python3 -m pip install --upgrade pip
+
     - name: (MSYS2) Install QMK CLI from source
       shell: msys2 {0}
       run: |
-        python3 -m pip install -U build
         python3 -m build
         python3 -m pip install dist/qmk-*.tar.gz
     - name: (MSYS2) Run qmk setup -y
