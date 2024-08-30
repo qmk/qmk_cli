@@ -44,6 +44,14 @@ def find_qmk_firmware():
             return path.resolve()
         return path
 
+    # For FreeDesktop compliant systems (Linux usually)
+    # https://specifications.freedesktop.org/basedir-spec/latest/
+    if 'XDG_DATA_HOME' in os.environ:
+        path = Path(os.environ['XDG_DATA_HOME']).expanduser()
+        if path.exists():
+            return path.resolve() / 'qmk_firmware'
+        return path / 'qmk_firmware'
+
     return Path.home() / 'qmk_firmware'
 
 
