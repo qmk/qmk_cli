@@ -184,7 +184,7 @@ class FindDevices(object):
                         except Exception as e:
                             device['e'] = e
                             device['e_name'] = e.__class__.__name__
-                            cli.log.error("Could not connect to %(color)s%(manufacturer_string)s %(product_string)s{style_reset_all} (%(color)s:%(vendor_id)04X:%(product_id)04X:%(index)d): %(e_name)s: %(e)s", device)
+                            cli.log.error("Could not connect to %(color)s%(manufacturer_string)s %(product_string)s{style_reset_all} (%(color)s%(vendor_id)04X:%(product_id)04X:%(index)d{style_reset_all}): %(e_name)s: %(e)s", device)
                             if cli.config.general.verbose:
                                 cli.log.exception(e)
                             del live_devices[device['path']]
