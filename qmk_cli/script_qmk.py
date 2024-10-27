@@ -46,9 +46,9 @@ def main():
     """Setup the environment before dispatching to the entrypoint.
     """
     # Warn if they use an outdated python version
-    if sys.version_info < (3, 7):
+    if sys.version_info < (3, 9):
         print('Warning: Your Python version is out of date! Some subcommands may not work!')
-        print('Please upgrade to Python 3.7 or later.')
+        print('Please upgrade to Python 3.9 or later.')
 
     if 'windows' in platform().lower():
         msystem = os.environ.get('MSYSTEM', '')
