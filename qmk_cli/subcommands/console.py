@@ -10,6 +10,9 @@ from time import sleep, strftime
 
 from milc import cli
 from milc.questions import yesno
+import importlib.util
+import sys
+import os
 
 LOG_COLOR = {
     'next': 0,
@@ -23,39 +26,36 @@ LOG_COLOR = {
     ],
 }
 
-KNOWN_BOOTLOADERS = {
-    # VID  ,  PID
-    ('03EB', '2045'): 'lufa-ms: LUFA Mass Storage Bootloader',
-    ('03EB', '2067'): 'qmk-hid: HID Bootloader',
-    ('03EB', '2FEF'): 'atmel-dfu: ATmega16U2',
-    ('03EB', '2FF0'): 'atmel-dfu: ATmega32U2',
-    ('03EB', '2FF3'): 'atmel-dfu: ATmega16U4',
-    ('03EB', '2FF4'): 'atmel-dfu: ATmega32U4',
-    ('03EB', '2FF9'): 'atmel-dfu: AT90USB64',
-    ('03EB', '2FFA'): 'atmel-dfu: AT90USB162',
-    ('03EB', '2FFB'): 'atmel-dfu: AT90USB128',
-    ('03EB', '6124'): 'Microchip SAM-BA',
-    ('0483', 'DF11'): 'stm32-dfu: STM32 BOOTLOADER',
-    ('16C0', '05DC'): 'usbasploader: USBaspLoader',
-    ('16C0', '05DF'): 'bootloadhid: HIDBoot',
-    ('16C0', '0478'): 'halfkay: Teensy Halfkay',
-    ('1B4F', '9203'): 'caterina: Pro Micro 3.3V',
-    ('1B4F', '9205'): 'caterina: Pro Micro 5V',
-    ('1B4F', '9207'): 'caterina: LilyPadUSB',
-    ('1C11', 'B007'): 'kiibohd: Kiibohd DFU Bootloader',
-    ('1EAF', '0003'): 'stm32duino: Maple 003',
-    ('1FFB', '0101'): 'caterina: Pololu A-Star 32U4 Bootloader',
-    ('2341', '0036'): 'caterina: Arduino Leonardo',
-    ('2341', '0037'): 'caterina: Arduino Micro',
-    ('239A', '000C'): 'caterina: Adafruit Feather 32U4',
-    ('239A', '000D'): 'caterina: Adafruit ItsyBitsy 32U4 3v',
-    ('239A', '000E'): 'caterina: Adafruit ItsyBitsy 32U4 5v',
-    ('2A03', '0036'): 'caterina: Arduino Leonardo',
-    ('2A03', '0037'): 'caterina: Arduino Micro',
-    ('314B', '0106'): 'apm32-dfu: APM32 DFU ISP Mode',
-    ('342D', 'DFA0'): 'wb32-dfu: WB32 Device in DFU Mode'
-}
+qmk_home = os.getenv('QMK_HOME')
 
+if qmk_home:
+    qmk_repo_path = os.path.join(qmk_home, 'lib', 'python')
+    sys.path.append(qmk_repo_path)
+
+    constants_path = os.path.join(qmk_repo_path, 'qmk', 'constants.py')
+    spec = importlib.util.spec_from_file_location('constants', constants_path)
+    constants = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(constants)
+
+    MCU2BOOTLOADER = constants.MCU2BOOTLOADER
+    BOOTLOADER_VIDS_PIDS = constants.BOOTLOADER_VIDS_PIDS
+else:
+    raise EnvironmentError("QMK_HOME environment variable is not set.")
+
+KNOWN_BOOTLOADERS = {}
+
+BOOTLOADER2MCU = {v: k for k, v in MCU2BOOTLOADER.items()}
+
+for bootloader_name, vid_pid_set in BOOTLOADER_VIDS_PIDS.items():
+    if bootloader_name in BOOTLOADER2MCU:
+        mcu_name = BOOTLOADER2MCU[bootloader_name]
+    else:
+        mcu_name = 'Unknown MCU'
+        mcu_name = 'Unknown Bootloader'
+
+    for vid, pid in vid_pid_set:
+        known_bootloader_value = f'{bootloader_name}: {mcu_name}'
+        KNOWN_BOOTLOADERS[(vid, pid)] = known_bootloader_value
 
 def install_deps():
     """Install the necessary dependencies for qmk console.
