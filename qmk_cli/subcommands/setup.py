@@ -5,9 +5,10 @@ import shlex
 import subprocess
 import sys
 from pathlib import Path
+from shutil import rmtree
 
 from milc import cli
-from milc.questions import yesno
+from milc.questions import choice, question, yesno
 from qmk_cli.git import git_clone
 from qmk_cli.helpers import is_qmk_firmware
 
@@ -43,6 +44,17 @@ def git_upstream(destination):
         return False
 
 
+def git_clone_fork(fork, branch, force=False):
+    if force:
+        rmtree(cli.args.home)
+
+    git_url = '/'.join((cli.args.baseurl, fork))
+    if git_clone(git_url, cli.args.home, branch):
+        git_upstream(cli.args.home)
+    else:
+        exit(1)
+
+
 @cli.argument('-n', '--no', arg_only=True, action='store_true', help='Answer no to all questions')
 @cli.argument('-y', '--yes', arg_only=True, action='store_true', help='Answer yes to all questions')
 @cli.argument('--baseurl', arg_only=True, default=default_base, help='The URL all git operations start from. Default: %s' % default_base)
@@ -61,9 +73,34 @@ def setup(cli):
         cli.log.error("Can't use both --yes and --no at the same time.")
         exit(1)
 
-    # Check on qmk_firmware, and if it doesn't exist offer to check it out.
+    # Check on qmk_firmware
+    # If it exists, ask the user what to do with it
+    # If it doesn't exist, offer to check it out
     if is_qmk_firmware(cli.args.home):
         cli.log.info('Found qmk_firmware at %s.', str(cli.args.home))
+        found_prompt = "What do you want to do?"
+        found_options = [
+            f"Delete and reclone {cli.args.fork}",
+            "Delete and clone a different fork",
+            "Keep it and continue"
+        ]
+        delete_confirm = "WARNING: This will delete your current qmk_firmware directory. Proceed?"
+
+        found_action = choice(found_prompt, options=found_options, default=2)
+        if found_action == f"Delete and reclone {cli.args.fork}":
+            if not yesno(delete_confirm, default=False):
+                exit(1)
+
+            git_clone_fork(cli.args.fork, cli.args.branch, force=True)
+
+        elif found_action == "Delete and clone a different fork":
+            fork_name = question("Enter the name of the fork:", default=cli.args.fork)
+            branch_name = question("Enter the branch name to clone:", default=cli.args.branch)
+
+            if not yesno(delete_confirm, default=False):
+                exit(1)
+
+            git_clone_fork(fork_name, branch_name, force=True)
 
     # Exists (but not an empty dir)
     elif cli.args.home.exists() and any(cli.args.home.iterdir()):
@@ -78,12 +115,7 @@ def setup(cli):
     else:
         cli.log.error('Could not find qmk_firmware!')
         if yesno(clone_prompt):
-            git_url = '/'.join((cli.args.baseurl, cli.args.fork))
-
-            if git_clone(git_url, cli.args.home, cli.args.branch):
-                git_upstream(cli.args.home)
-            else:
-                exit(1)
+            git_clone_fork(cli.args.fork, cli.args.branch)
         else:
             cli.log.warning('Not cloning qmk_firmware due to user input or --no flag.')
 
