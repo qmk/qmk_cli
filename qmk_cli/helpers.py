@@ -1,8 +1,8 @@
 """Useful helper functions.
 """
 import os
+import json
 from functools import lru_cache
-from importlib.util import find_spec
 from pathlib import Path
 
 from milc import cli
@@ -53,6 +53,51 @@ def in_qmk_firmware():
     cur_dir = Path.cwd()
     while len(cur_dir.parents) > 0:
         if is_qmk_firmware(cur_dir):
+            return cur_dir
+
+        # Move up a directory before the next iteration
+        cur_dir = cur_dir / '..'
+        cur_dir = cur_dir.resolve()
+
+
+def is_qmk_userspace(qmk_userspace):
+    """Returns True if the given Path() is a qmk_userspace clone.
+    """
+    path = qmk_userspace / 'qmk.json'
+    if not path.exists():
+        return False
+
+    try:
+        return 'userspace_version' in json.loads(path.read_text(encoding="UTF-8"))
+    except json.decoder.JSONDecodeError as e:
+        return False
+
+
+@lru_cache(maxsize=2)
+def find_qmk_userspace():
+    """Look for qmk_userspace in the usual places.
+    """
+    if in_qmk_userspace():
+        return in_qmk_userspace()
+
+    if cli.config.user.overlay_dir:
+        return Path(cli.config.user.overlay_dir).expanduser().resolve()
+
+    if 'QMK_USERSPACE' in os.environ:
+        path = Path(os.environ['QMK_USERSPACE']).expanduser()
+        if path.exists():
+            return path.resolve()
+        return path
+
+    return Path.home() / 'qmk_userspace'
+
+
+def in_qmk_userspace():
+    """Returns the path to the qmk_userspace we are currently in, or None if we are not inside qmk_userspace.
+    """
+    cur_dir = Path.cwd()
+    while len(cur_dir.parents) > 0:
+        if is_qmk_userspace(cur_dir):
             return cur_dir
 
         # Move up a directory before the next iteration
