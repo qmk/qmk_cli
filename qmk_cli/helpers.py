@@ -26,7 +26,7 @@ def is_qmk_firmware(qmk_firmware):
     return True
 
 
-@lru_cache(maxsize=2)
+@lru_cache(maxsize=1)
 def find_qmk_firmware():
     """Look for qmk_firmware in the usual places.
 
@@ -47,6 +47,7 @@ def find_qmk_firmware():
     return Path.home() / 'qmk_firmware'
 
 
+@lru_cache(maxsize=1)
 def in_qmk_firmware():
     """Returns the path to the qmk_firmware we are currently in, or None if we are not inside qmk_firmware.
     """
@@ -73,7 +74,7 @@ def is_qmk_userspace(qmk_userspace):
         return False
 
 
-@lru_cache(maxsize=2)
+@lru_cache(maxsize=1)
 def find_qmk_userspace():
     """Look for qmk_userspace in the usual places.
     """
@@ -92,6 +93,7 @@ def find_qmk_userspace():
     return Path.home() / 'qmk_userspace'
 
 
+@lru_cache(maxsize=1)
 def in_qmk_userspace():
     """Returns the path to the qmk_userspace we are currently in, or None if we are not inside qmk_userspace.
     """

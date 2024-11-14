@@ -13,7 +13,7 @@ from traceback import print_exc
 import milc
 
 from . import __version__
-from .helpers import find_qmk_firmware, is_qmk_firmware, find_qmk_userspace, is_qmk_userspace
+from .helpers import find_qmk_firmware, is_qmk_firmware, find_qmk_userspace
 
 milc.cli.milc_options(version=__version__)
 milc.EMOJI_LOGLEVELS['INFO'] = '{fg_blue}Ψ{style_reset_all}'
