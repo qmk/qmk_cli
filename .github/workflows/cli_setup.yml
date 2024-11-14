@@ -74,7 +74,7 @@ jobs:
       shell: msys2 {0}
       run: |
         python3 -m build
-        python3 -m pip install dist/qmk-*.tar.gz
+        python3 -m pip install --break-system-packages dist/qmk-*.tar.gz
     - name: (MSYS2) Run qmk setup -y
       shell: msys2 {0}
       run: qmk setup -y
