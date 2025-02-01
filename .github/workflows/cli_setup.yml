@@ -68,7 +68,7 @@ jobs:
     - name: (MSYS2) Install Python dependencies
       shell: msys2 {0}
       run: |
-        python3 -m pip install --break-system-packages --upgrade pip
+        python3 -m pip install --break-system-packages --force-reinstall --upgrade pip
 
     - name: (MSYS2) Install QMK CLI from source
       shell: msys2 {0}
