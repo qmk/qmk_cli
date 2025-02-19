@@ -2,6 +2,7 @@
 """
 import os
 import json
+from platformdirs import user_data_dir
 from functools import lru_cache
 from pathlib import Path
 
@@ -43,6 +44,10 @@ def find_qmk_firmware():
         if path.exists():
             return path.resolve()
         return path
+
+    hidden_home = Path(user_data_dir('qmk_cli', 'QMK')) / 'qmk_firmware'
+    if hidden_home.exists():
+        return hidden_home
 
     return Path.home() / 'qmk_firmware'
 
