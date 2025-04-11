@@ -60,7 +60,7 @@ def main():
             env_ok = True
 
         # Check if we're using a `uv`-based environment
-        if '\\uv\\' in sys.executable:
+        if '\\uv\\' in sys.executable or '/uv/' in sys.executable:
             env_ok = True
 
         # If none of the options above were true, then we're in an unsupported environment. Bomb out.
