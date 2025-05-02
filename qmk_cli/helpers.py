@@ -8,6 +8,16 @@ from pathlib import Path
 from milc import cli
 
 
+def AbsPath(arg):
+    """Resolve relative paths to the original working directory.
+    """
+    arg = Path(arg)
+    if not arg.is_absolute():
+        return (Path(os.environ['ORIG_CWD']) / arg).absolute()
+
+    return arg
+
+
 def is_qmk_firmware(qmk_firmware):
     """Returns True if the given Path() is a qmk_firmware clone.
     """
