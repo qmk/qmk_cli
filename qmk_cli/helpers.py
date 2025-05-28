@@ -81,14 +81,14 @@ def find_qmk_userspace():
     if in_qmk_userspace():
         return in_qmk_userspace()
 
-    if cli.config.user.overlay_dir:
-        return Path(cli.config.user.overlay_dir).expanduser().resolve()
-
     if 'QMK_USERSPACE' in os.environ:
         path = Path(os.environ['QMK_USERSPACE']).expanduser()
         if path.exists():
             return path.resolve()
         return path
+
+    if cli.config.user.overlay_dir:
+        return Path(cli.config.user.overlay_dir).expanduser().resolve()
 
     return Path.home() / 'qmk_userspace'
 
