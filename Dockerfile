@@ -3,11 +3,13 @@ FROM ghcr.io/qmk/qmk_base_container:latest
 # Copy package in
 ADD dist /tmp/dist
 
-# Install python packages
-RUN python3 -m pip uninstall -y qmk || true
-RUN python3 -m pip install --upgrade pip setuptools wheel nose2 && \
-    python3 -m pip install /tmp/dist/qmk-*.whl && \
-    rm -rf /tmp/dist
+# Install QMK CLI via bootstrap script
+ARG TARGETPLATFORM
+RUN /bin/bash -c "curl -fsSL https://install.qmk.fm | sh -s -- --confirm"
 
-# Set the default location for qmk_firmware
-ENV QMK_HOME /qmk_firmware
+# Install python packages
+RUN /bin/bash -c "source \$(/home/qmk/.local/bin/uv tool dir)/qmk/bin/activate \
+    && { pip uninstall -y qmk || true ; } \
+    && pip install --upgrade pip setuptools wheel nose2 \
+    && pip install /tmp/dist/qmk-*.whl \
+    && sudo rm -rf /tmp/dist"
