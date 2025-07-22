@@ -54,3 +54,7 @@ jobs:
         tags: |
           ghcr.io/qmk/qmk_cli:latest
           qmkfm/qmk_cli:latest
+          ghcr.io/qmk/qmk_cli:${{ github.sha }}
+          qmkfm/qmk_cli:${{ github.sha }}
+          ghcr.io/qmk/qmk_cli:${{ steps.previoustag.outputs.tag }}
+          qmkfm/qmk_cli:${{ steps.previoustag.outputs.tag }}
