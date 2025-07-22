@@ -25,3 +25,4 @@ ENV PATH=/home/qmk/.local/share/uv/tools/qmk/bin:/home/qmk/.local/bin:$PATH \
 
 ARG TARGETPLATFORM
 COPY --from=builder /home/qmk /home/qmk
+COPY --from=builder /usr/lib/udev/rules.d/50-qmk.rules /usr/lib/udev/rules.d/50-qmk.rules
