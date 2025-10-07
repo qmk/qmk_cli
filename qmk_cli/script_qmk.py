@@ -4,6 +4,7 @@
 This program can be run from anywhere, with or without a qmk_firmware repository. If a qmk_firmware repository can be located we will use that to augment our available subcommands.
 """
 import os
+from pathlib import Path
 import shlex
 import subprocess
 import sys
@@ -11,9 +12,16 @@ from platform import platform
 from traceback import print_exc
 
 import milc
+import platformdirs
 
 from . import __version__
 from .helpers import find_qmk_firmware, is_qmk_firmware, find_qmk_userspace, is_qmk_userspace
+
+# Ensure the QMK distribution is on the `$PATH` if present. This must be kept in sync with qmk/qmk_firmware.
+_default_distrib_path = milc.cli.run(['cygpath', '-w', '/opt/qmk']).stdout.strip() if 'windows' in platform().lower() else platformdirs.user_data_dir('qmk')  # this must be kept in sync with the default values inside `util/env-bootstrap.sh`!
+QMK_DISTRIB_DIR = Path(os.environ.get('QMK_DISTRIB_DIR', _default_distrib_path))
+if QMK_DISTRIB_DIR.exists():
+    os.environ['PATH'] = str(QMK_DISTRIB_DIR / 'bin') + os.pathsep + os.environ['PATH']
 
 milc.cli.milc_options(version=__version__)
 milc.EMOJI_LOGLEVELS['INFO'] = '{fg_blue}Ψ{style_reset_all}'
