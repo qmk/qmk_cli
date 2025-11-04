@@ -23,6 +23,10 @@ QMK_DISTRIB_DIR = Path(os.environ.get('QMK_DISTRIB_DIR', _default_distrib_path))
 if QMK_DISTRIB_DIR.exists():
     os.environ['PATH'] = str(QMK_DISTRIB_DIR / 'bin') + os.pathsep + os.environ['PATH']
 
+# Prepend any user-defined path prefix
+if 'QMK_PATH_PREFIX' in os.environ:
+    os.environ['PATH'] = os.environ['QMK_PATH_PREFIX'] + os.pathsep + os.environ['PATH']
+
 milc.cli.milc_options(version=__version__)
 milc.EMOJI_LOGLEVELS['INFO'] = '{fg_blue}Ψ{style_reset_all}'
 
