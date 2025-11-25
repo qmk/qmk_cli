@@ -96,7 +96,19 @@ def import_usb_core():
 def import_hid():
     """Attempts to import the hid module.
     """
+    import os
+    old_cwd = os.getcwd()
     try:
+        # macOS library search paths don't include homebrew by default when launched via a `uv`-based deployment.
+        # The `hid` python module does a search and attempts to load a set of known library names, but doesn't qualify the path, nor gives the option to do so.
+        # To work around this, we chdir to the homebrew lib directory before importing hid, then chdir back to where we were.
+        if 'darwin' in platform().lower() or 'macos' in platform().lower():
+            for path in ('/opt/homebrew/lib', '/usr/local/lib'):
+                lib_search = Path(path) / 'libhidapi.dylib'
+                if lib_search.exists():
+                    os.chdir(path)
+                    break
+
         import hid
         return hid
 
@@ -107,6 +119,8 @@ def import_hid():
             return import_hid()
 
         raise
+    finally:
+        os.chdir(old_cwd)
 
 
 class MonitorDevice(object):
