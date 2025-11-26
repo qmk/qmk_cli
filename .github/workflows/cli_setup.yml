@@ -31,7 +31,7 @@ jobs:
 
     - name: Install dependencies
       shell: bash
-      run: su qmk -c "sudo apt-get update && apt-get install -y python3-venv" <<< "qmk"
+      run: su qmk -c "sudo apt-get update && sudo apt-get install -y python3-venv" <<< "qmk"
 
     - name: Run ci_tests
       run: ./ci_tests -a
