@@ -12,13 +12,13 @@ RUN mkdir -p /opt/uv/bin \
 ENV PATH=/opt/qmk/bin:/opt/uv/tools/qmk/bin:/usr/local/bin:$PATH \
     VIRTUAL_ENV=/opt/uv/tools/qmk
 
-# Allow the uv-installed python to be usable by others
-RUN chmod -R go=u,go-w /opt/uv /opt/qmk
-
 # Install python packages
 RUN python3 -m pip uninstall -y qmk || true
 RUN python3 -m pip install --upgrade pip setuptools wheel nose2 && \
     python3 -m pip install /tmp/dist/qmk-*.whl
+
+# Allow the uv-installed python to be usable by others
+RUN chmod -R go=u,go-w /opt/uv /opt/qmk
 
 # 2nd stage so we don't have /tmp/dist in the final image
 FROM ghcr.io/qmk/qmk_base_container:latest
