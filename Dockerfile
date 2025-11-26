@@ -5,11 +5,11 @@ ADD dist /tmp/dist
 
 # Install QMK CLI via bootstrap script
 ARG TARGETPLATFORM
-RUN /bin/bash -c "curl -fsSL https://install.qmk.fm | sh -s -- --confirm"
+RUN /bin/bash -c "curl -fsSL https://install.qmk.fm | sh -s -- --confirm --uv-install-dir=/usr/local --uv-tool-dir=/opt/uv/tools --qmk-distrib-dir=/opt/qmk"
 
 # Do the equivalent of entering the virtual environment
-ENV PATH=/home/qmk/.local/share/uv/tools/qmk/bin:/home/qmk/.local/bin:$PATH \
-    VIRTUAL_ENV=/home/qmk/.local/share/uv/tools/qmk
+ENV PATH=/opt/qmk/bin:/opt/uv/tools/qmk/bin:$PATH \
+    VIRTUAL_ENV=/opt/uv/tools/qmk
 
 # Install python packages
 RUN python3 -m pip uninstall -y qmk || true
@@ -20,9 +20,11 @@ RUN python3 -m pip install --upgrade pip setuptools wheel nose2 && \
 FROM ghcr.io/qmk/qmk_base_container:latest
 
 # Do the equivalent of entering the virtual environment
-ENV PATH=/home/qmk/.local/share/uv/tools/qmk/bin:/home/qmk/.local/bin:$PATH \
-    VIRTUAL_ENV=/home/qmk/.local/share/uv/tools/qmk
+ENV PATH=/opt/qmk/bin:/opt/uv/tools/qmk/bin:$PATH \
+    VIRTUAL_ENV=/opt/uv/tools/qmk \
+    QMK_DISTRIB_DIR=/opt/qmk
 
 ARG TARGETPLATFORM
-COPY --from=builder /home/qmk /home/qmk
-COPY --from=builder /usr/lib/udev/rules.d/50-qmk.rules /usr/lib/udev/rules.d/50-qmk.rules
+COPY --from=builder /root/.local/share/uv /root/.local/share/uv
+COPY --from=builder /opt/uv /opt/uv
+COPY --from=builder /opt/qmk /opt/qmk
