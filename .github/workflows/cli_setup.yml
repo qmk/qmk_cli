@@ -16,6 +16,8 @@ jobs:
         run: echo "::set-output name=uid_gid::$(id -u):$(id -g)"
 
   test_cli_base_container:
+    needs: configure
+
     runs-on: ubuntu-latest
     container:
       image: ghcr.io/qmk/qmk_base_container
