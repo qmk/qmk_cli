@@ -7,9 +7,19 @@ on:
   pull_request:
 
 jobs:
+  configure:
+    runs-on: ubuntu-latest
+    outputs:
+      uid_gid: ${{ steps.get-user.outputs.uid_gid }}
+    steps:
+      - id: get-user
+        run: echo "::set-output name=uid_gid::$(id -u):$(id -g)"
+
   test_cli_base_container:
     runs-on: ubuntu-latest
-    container: ghcr.io/qmk/qmk_base_container
+    container:
+      image: ghcr.io/qmk/qmk_base_container
+      options: --user ${{ needs.configure.outputs.uid_gid }}
 
     env:
       QMK_HOME: ~/qmk_firmware
