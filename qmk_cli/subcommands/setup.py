@@ -10,7 +10,7 @@ from shutil import rmtree
 from milc import cli
 from milc.questions import choice, question, yesno
 from qmk_cli.git import git_clone
-from qmk_cli.helpers import is_qmk_firmware
+from qmk_cli.helpers import AbsPath, is_qmk_firmware
 
 default_base = 'https://github.com'
 default_repo = 'qmk_firmware'
@@ -59,7 +59,7 @@ def git_clone_fork(fork, branch, force=False):
 @cli.argument('-y', '--yes', arg_only=True, action='store_true', help='Answer yes to all questions')
 @cli.argument('--baseurl', arg_only=True, default=default_base, help='The URL all git operations start from. Default: %s' % default_base)
 @cli.argument('-b', '--branch', arg_only=True, default=default_branch, help='The branch to clone. Default: %s' % default_branch)
-@cli.argument('-H', '--home', arg_only=True, default=Path(os.environ['QMK_HOME']), type=Path, help='The location for QMK Firmware. Default: %s' % os.environ['QMK_HOME'])
+@cli.argument('-H', '--home', arg_only=True, default=Path(os.environ['QMK_HOME']), type=AbsPath, help='The location for QMK Firmware. Default: %s' % os.environ['QMK_HOME'])
 @cli.argument('fork', arg_only=True, default=default_fork, nargs='?', help='The qmk_firmware fork to clone. Default: %s' % default_fork)
 @cli.subcommand('Setup your computer for qmk_firmware.')
 def setup(cli):

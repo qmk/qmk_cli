@@ -8,6 +8,16 @@ from pathlib import Path
 from milc import cli
 
 
+def AbsPath(arg):
+    """Resolve relative paths to the original working directory.
+    """
+    arg = Path(arg)
+    if not arg.is_absolute():
+        return (Path(os.environ['ORIG_CWD']) / arg).absolute()
+
+    return arg
+
+
 def is_qmk_firmware(qmk_firmware):
     """Returns True if the given Path() is a qmk_firmware clone.
     """
@@ -81,14 +91,14 @@ def find_qmk_userspace():
     if in_qmk_userspace():
         return in_qmk_userspace()
 
-    if cli.config.user.overlay_dir:
-        return Path(cli.config.user.overlay_dir).expanduser().resolve()
-
     if 'QMK_USERSPACE' in os.environ:
         path = Path(os.environ['QMK_USERSPACE']).expanduser()
         if path.exists():
             return path.resolve()
         return path
+
+    if cli.config.user.overlay_dir:
+        return Path(cli.config.user.overlay_dir).expanduser().resolve()
 
     return Path.home() / 'qmk_userspace'
 

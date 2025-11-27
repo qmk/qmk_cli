@@ -43,6 +43,7 @@ jobs:
       run: |
         git config --local user.email "hello@qmk.fm"
         git config --local user.name "QMK Bot"
+        bumpversion --dry-run --list ${{ github.event.inputs.version_part }} | grep new_version= | sed "s/new_version/NEW_CLI_VERSION/" >> "$GITHUB_ENV"
         bumpversion ${{ github.event.inputs.version_part }}
 
     - name: Push changes
@@ -82,6 +83,10 @@ jobs:
         tags: |
           ghcr.io/qmk/qmk_cli:latest
           qmkfm/qmk_cli:latest
+          ghcr.io/qmk/qmk_cli:${{ github.sha }}
+          qmkfm/qmk_cli:${{ github.sha }}
+          ghcr.io/qmk/qmk_cli:${{ env.NEW_CLI_VERSION }}
+          qmkfm/qmk_cli:${{ env.NEW_CLI_VERSION }}
 
     - name: Trigger OS package builds
       run: ./trigger_packages
