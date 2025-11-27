@@ -1,0 +1,42 @@
+name: Test Docker Image
+
+on:
+  pull_request:
+
+jobs:
+  test:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Set up Python
+      uses: actions/setup-python@v6
+      with:
+        python-version: '3.9'
+
+    - name: Set up QEMU
+      uses: docker/setup-qemu-action@v3
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+
+    - uses: actions/checkout@v6
+
+    - name: Run ci_tests
+      run: ./ci_tests
+
+    - name: Install dependencies
+      run: |
+        python3 -m pip install --upgrade pip
+        pip install setuptools wheel
+        pip install -r requirements-dev.txt
+
+    - name: Build
+      run: |
+        python3 -m build
+
+    - name: Build and Push to Docker Hub
+      uses: docker/build-push-action@v6.18.0
+      with:
+        context: .
+        platforms: linux/amd64,linux/arm64
