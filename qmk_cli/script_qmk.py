@@ -17,9 +17,21 @@ import platformdirs
 from . import __version__
 from .helpers import find_qmk_firmware, is_qmk_firmware, find_qmk_userspace, is_qmk_userspace
 
+
+def _get_default_distrib_path():
+    if 'windows' in platform().lower():
+        try:
+            result = milc.cli.run(['cygpath', '-w', '/opt/qmk'])
+            if result.returncode == 0:
+                return result.stdout.strip()
+        except Exception:
+            pass
+
+    return platformdirs.user_data_dir('qmk')
+
+
 # Ensure the QMK distribution is on the `$PATH` if present. This must be kept in sync with qmk/qmk_firmware.
-_default_distrib_path = milc.cli.run(['cygpath', '-w', '/opt/qmk']).stdout.strip() if 'windows' in platform().lower() else platformdirs.user_data_dir('qmk')  # this must be kept in sync with the default values inside `util/env-bootstrap.sh`!
-QMK_DISTRIB_DIR = Path(os.environ.get('QMK_DISTRIB_DIR', _default_distrib_path))
+QMK_DISTRIB_DIR = Path(os.environ.get('QMK_DISTRIB_DIR', _get_default_distrib_path()))
 if QMK_DISTRIB_DIR.exists():
     os.environ['PATH'] = str(QMK_DISTRIB_DIR / 'bin') + os.pathsep + os.environ['PATH']
 
