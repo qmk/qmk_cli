@@ -24,7 +24,7 @@ jobs:
       with:
         fetch-depth: 0
 
-    - name: 'Get Previous tag'
+    - name: Get Previous tag
       id: previoustag
       uses: "WyriHaximus/github-action-get-previous-tag@v2"
 
@@ -45,11 +45,25 @@ jobs:
         username: ${{ secrets.DOCKER_HUB_USERNAME }}
         password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
 
-    - name: Build and Push to Docker Hub
+    - name: Build and Push slim to Docker Hub
       uses: docker/build-push-action@v7
       with:
         context: .
         push: true
+        target: slim
+        platforms: linux/amd64,linux/arm64
+        tags: |
+          ghcr.io/qmk/qmk_cli:slim
+          qmkfm/qmk_cli:slim
+          ghcr.io/qmk/qmk_cli:${{ steps.previoustag.outputs.tag }}-slim
+          qmkfm/qmk_cli:${{ steps.previoustag.outputs.tag }}-slim
+
+    - name: Build and Push full to Docker Hub
+      uses: docker/build-push-action@v7
+      with:
+        context: .
+        push: true
+        target: full
         platforms: linux/amd64,linux/arm64
         tags: |
           ghcr.io/qmk/qmk_cli:latest
