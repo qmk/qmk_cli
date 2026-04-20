@@ -17,6 +17,10 @@ A program to help users work with [QMK Firmware](https://qmk.fm/).
     * `qmk lint`
     * ...and many more!
 
+## Quickstart
+
+Follow our [documentation to get started](https://docs.qmk.fm/newbs_getting_started).
+
 ## Packages
 
 We provide "install and go" packages for many Operating Systems.
@@ -30,11 +34,6 @@ Using [Homebrew](https://brew.sh):
 ### Windows
 
 Download our custom MSYS2 installer here: https://msys.qmk.fm/
-
-## Quickstart
-
-* `python3 -m pip install qmk`
-* `qmk setup`
 
 ## Building
 
