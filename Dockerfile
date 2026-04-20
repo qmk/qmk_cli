@@ -1,4 +1,4 @@
-FROM ghcr.io/qmk/qmk_base_container:latest as builder
+FROM ghcr.io/qmk/qmk_base_container:latest AS builder
 
 # Copy package in
 ADD dist /tmp/dist
@@ -21,7 +21,18 @@ RUN python3 -m pip install --upgrade pip setuptools wheel nose2 && \
 RUN chmod -R go=u,go-w /opt/uv /opt/qmk
 
 # 2nd stage so we don't have /tmp/dist in the final image
-FROM ghcr.io/qmk/qmk_base_container:latest
+FROM ghcr.io/qmk/qmk_base_container:latest AS slim
+
+COPY --from=builder /opt/uv /opt/uv
+
+# Do the equivalent of entering the virtual environment
+ENV PATH=/opt/uv/tools/qmk/bin:$PATH \
+    VIRTUAL_ENV=/opt/uv/tools/qmk \
+    QMK_HOME=/qmk_firmware \
+    QMK_USERSPACE=/qmk_userspace
+
+# 2nd stage so we don't have /tmp/dist in the final image
+FROM ghcr.io/qmk/qmk_base_container:latest AS full
 
 COPY --from=builder /opt/uv /opt/uv
 COPY --from=builder /opt/qmk /opt/qmk
