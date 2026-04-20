@@ -1,7 +1,0 @@
-#!/bin/bash
-# Increment the verison number and release a new version of qmk_cli.
-#
-# Required packages: pip3 install bumpversion twine
-
-echo "Use the github action instead!"
-exit 1
