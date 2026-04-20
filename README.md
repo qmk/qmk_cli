@@ -1,7 +1,10 @@
 # QMK CLI
-[![CLI Setup](https://github.com/qmk/qmk_cli/actions/workflows/cli_setup.yml/badge.svg)](https://github.com/qmk/qmk_cli/actions/workflows/cli_setup.yml)
 
-A program to help users work with [QMK Firmware](https://qmk.fm/).
+> A program to help users work with [QMK Firmware](https://qmk.fm/).
+
+[![Latest Release](https://img.shields.io/github/v/tag/qmk/qmk_cli?color=3D87CE&label=Latest&sort=semver&style=for-the-badge)](https://github.com/qmk/qmk_cli/tags/latest)
+[![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/qmk/qmk_cli/cli_setup.yml?logo=github&style=for-the-badge)](https://github.com/qmk/qmk_cli/actions?query=workflow%3ACLI+branch%3Amaster)
+[![Discord](https://img.shields.io/discord/440868230475677696.svg?logo=discord&logoColor=white&color=7289DA&style=for-the-badge)](https://discord.gg/qmk)
 
 ## Features
 
