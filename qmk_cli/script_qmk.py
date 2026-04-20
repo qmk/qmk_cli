@@ -73,27 +73,6 @@ def main():
         print('Warning: Your Python version is out of date! Some subcommands may not work!')
         print('Please upgrade to Python 3.9 or later.')
 
-    if 'windows' in platform().lower():
-        msystem = os.environ.get('MSYSTEM', '')
-
-        # Assume the environment isn't workable by default
-        env_ok = False
-
-        # Check if we're using the mingw64/msys2 environment
-        if 'mingw64' in sys.executable and 'MINGW64' in msystem:
-            env_ok = True
-
-        # Check if we're using a `uv`-based environment
-        if '\\uv\\' in sys.executable or '/uv/' in sys.executable:
-            env_ok = True
-
-        # If none of the options above were true, then we're in an unsupported environment. Bomb out.
-        if not env_ok:
-            print('ERROR: It seems you are not using the MINGW64 terminal.')
-            print('Please close this terminal and open a new MSYS2 MinGW 64-bit terminal.')
-            print('Python: %s, MSYSTEM: %s' % (sys.executable, msystem))
-            exit(1)
-
     # Environment setup
     qmk_userspace = find_qmk_userspace()
     qmk_firmware = find_qmk_firmware()
