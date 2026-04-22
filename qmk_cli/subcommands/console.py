@@ -57,6 +57,26 @@ KNOWN_BOOTLOADERS = {
 }
 
 
+def _get_next_color():
+    """Cycles to the next available log color.
+    """
+    color = LOG_COLOR['colors'][LOG_COLOR['next']]
+    LOG_COLOR['next'] = (LOG_COLOR['next'] + 1) % len(LOG_COLOR['colors'])
+    return color
+
+
+def _gen_header(dev):
+    """Generate a consistent logging segment.
+    """
+    return f'{dev["color"]}{dev["manufacturer_string"]} {dev["product_string"]}{{style_reset_all}} ({dev["color"]}{int2hex(dev["vendor_id"])}:{int2hex(dev["product_id"])}:{dev["index"]}{{style_reset_all}})'
+
+
+def int2hex(number):
+    """Returns a string representation of the number as hex.
+    """
+    return f'{number:04X}'
+
+
 def install_deps():
     """Install the necessary dependencies for qmk console.
     """
@@ -69,9 +89,10 @@ def install_deps():
     elif 'windows' in this_platform:
         command = ['pacboy', 'sync', '--needed', '--noconfirm', '--disable-download-timeout', 'hidapi:x']
     else:
-        cli.log.error('Unsupported platform: %s', this_platform)
+        cli.log.error(f'Unsupported platform: {this_platform}')
 
-    if yesno("Would you like to run `%s` to install the necessary package?", ' '.join(command)):
+    cmd_str = ' '.join(command)
+    if yesno(f'Would you like to run "{cmd_str}" to install the necessary package?'):
         cli.run(command, capture_output=False)
         return True
 
@@ -85,7 +106,7 @@ def import_usb_core():
         return usb.core
 
     except ImportError as e:
-        cli.log.error('Could not import usb.core: %s', e)
+        cli.log.error(f'Could not import usb.core: {e}')
 
         if install_deps():
             return import_usb_core()
@@ -113,7 +134,7 @@ def import_hid():
         return hid
 
     except ImportError as e:
-        cli.log.error('Could not import hid: %s', e)
+        cli.log.error(f'Could not import hid: {e}')
 
         if install_deps():
             return import_hid()
@@ -131,8 +152,7 @@ class MonitorDevice(object):
         self.device = self.hid.Device(path=hid_device['path'])
         self.current_line = ''
 
-        cli.log.info('Console Connected: %(color)s%(manufacturer_string)s %(product_string)s{style_reset_all} (%(color)s%(vendor_id)04X:%(product_id)04X:%(index)d{style_reset_all})', hid_device)
-
+        cli.log.info(f'Console Connected: {_gen_header(hid_device)}')
     def read(self, size, encoding='ascii', timeout=1):
         """Read size bytes from the device.
         """
@@ -152,12 +172,10 @@ class MonitorDevice(object):
     def run_forever(self):
         while True:
             try:
-                message = {**self.hid_device, 'text': self.read_line()}
-                identifier = (int2hex(message['vendor_id']), int2hex(message['product_id'])) if self.numeric else (message['manufacturer_string'], message['product_string'])
-                message['identifier'] = ':'.join(identifier)
-                message['ts'] = '{style_dim}{fg_green}%s{style_reset_all} ' % (strftime(cli.config.general.datetime_fmt),) if cli.args.timestamp else ''
+                text = self.read_line()
+                ts = f'{{style_dim}}{{fg_green}}{strftime(cli.config.general.datetime_fmt)}{{style_reset_all}}' if cli.args.timestamp else ''
 
-                cli.echo('%s', '%(ts)s%(color)s%(identifier)s:%(index)d{style_reset_all}: %(text)s' % message)
+                cli.echo(f'{ts}{_gen_header(self.hid_device)}: {text}')
 
             except self.hid.HIDException:
                 break
@@ -181,13 +199,12 @@ class FindDevices(object):
             try:
                 for device in list(live_devices):
                     if not live_devices[device]['thread'].is_alive():
-                        cli.log.info('Console Disconnected: %(color)s%(manufacturer_string)s %(product_string)s{style_reset_all} (%(color)s%(vendor_id)04X:%(product_id)04X:%(index)d{style_reset_all})', live_devices[device])
+                        cli.log.info(f'Console Disconnected: {_gen_header(live_devices[device])}')
                         del live_devices[device]
 
                 for device in self.find_devices():
                     if device['path'] not in live_devices:
-                        device['color'] = LOG_COLOR['colors'][LOG_COLOR['next']]
-                        LOG_COLOR['next'] = (LOG_COLOR['next'] + 1) % len(LOG_COLOR['colors'])
+                        device['color'] = _get_next_color()
                         live_devices[device['path']] = device
 
                         try:
@@ -196,9 +213,7 @@ class FindDevices(object):
 
                             device['thread'].start()
                         except Exception as e:
-                            device['e'] = e
-                            device['e_name'] = e.__class__.__name__
-                            cli.log.error("Could not connect to %(color)s%(manufacturer_string)s %(product_string)s{style_reset_all} (%(color)s%(vendor_id)04X:%(product_id)04X:%(index)d{style_reset_all}): %(e_name)s: %(e)s", device)
+                            cli.log.error(f'Could not connect to {_gen_header(device)}: {e.__class__.__name__}: {e}')
                             if cli.config.general.verbose:
                                 cli.log.exception(e)
                             del live_devices[device['path']]
@@ -209,7 +224,7 @@ class FindDevices(object):
                             live_bootloaders[device.address]._qmk_found = True
                         else:
                             name = KNOWN_BOOTLOADERS[(int2hex(device.idVendor), int2hex(device.idProduct))]
-                            cli.log.info('Bootloader Connected: {style_bright}{fg_magenta}%s', name)
+                            cli.log.info(f'Bootloader Connected: {{style_bright}}{{fg_magenta}}{name}')
                             device._qmk_found = True
                             live_bootloaders[device.address] = device
 
@@ -218,7 +233,7 @@ class FindDevices(object):
                             live_bootloaders[device]._qmk_found = False
                         else:
                             name = KNOWN_BOOTLOADERS[(int2hex(live_bootloaders[device].idVendor), int2hex(live_bootloaders[device].idProduct))]
-                            cli.log.info('Bootloader Disconnected: {style_bright}{fg_magenta}%s', name)
+                            cli.log.info(f'Bootloader Disconnected: {{style_bright}}{{fg_magenta}}{name}')
                             del live_bootloaders[device]
 
                 sleep(.1)
@@ -285,21 +300,15 @@ class FindDevices(object):
         # Add index numbers
         device_index = {}
         for device in devices:
-            id = ':'.join((int2hex(device['vendor_id']), int2hex(device['product_id'])))
+            ident = ':'.join((int2hex(device['vendor_id']), int2hex(device['product_id'])))
 
-            if id not in device_index:
-                device_index[id] = 0
+            if ident not in device_index:
+                device_index[ident] = 0
 
-            device_index[id] += 1
-            device['index'] = device_index[id]
+            device_index[ident] += 1
+            device['index'] = device_index[ident]
 
         return devices
-
-
-def int2hex(number):
-    """Returns a string representation of the number as hex.
-    """
-    return "%04X" % number
 
 
 def list_devices(device_finder):
@@ -310,9 +319,8 @@ def list_devices(device_finder):
     if devices:
         cli.log.info('Available devices:')
         for dev in devices:
-            color = LOG_COLOR['colors'][LOG_COLOR['next']]
-            LOG_COLOR['next'] = (LOG_COLOR['next'] + 1) % len(LOG_COLOR['colors'])
-            cli.log.info("\t%s%s:%s:%d{style_reset_all}\t%s %s", color, int2hex(dev['vendor_id']), int2hex(dev['product_id']), dev['index'], dev['manufacturer_string'], dev['product_string'])
+            color = _get_next_color()
+            cli.log.info(f'\t{color}{int2hex(dev["vendor_id"])}:{int2hex(dev["product_id"])}:{dev["index"]}{{style_reset_all}}\t{dev["manufacturer_string"]} {dev["product_string"]}')
 
     if cli.args.bootloaders:
         bootloaders = device_finder.find_bootloaders()
@@ -321,7 +329,8 @@ def list_devices(device_finder):
             cli.log.info('Available Bootloaders:')
 
             for dev in bootloaders:
-                cli.log.info("\t%s:%s\t%s", int2hex(dev.idVendor), int2hex(dev.idProduct), KNOWN_BOOTLOADERS[(int2hex(dev.idVendor), int2hex(dev.idProduct))])
+                color = _get_next_color()
+                cli.log.info(f'\t{color}{int2hex(dev.idVendor)}:{int2hex(dev.idProduct)}{{style_reset_all}}\t{KNOWN_BOOTLOADERS[(int2hex(dev.idVendor), int2hex(dev.idProduct))]}')
 
 
 @cli.argument('--bootloaders', arg_only=True, default=True, action='store_boolean', help='displaying bootloaders.')
@@ -348,17 +357,17 @@ def console(cli):
             vid, pid, index = device
 
             if not index.isdigit():
-                cli.log.error('Device index must be a number! Got "%s" instead.', index)
+                cli.log.error(f'Device index must be a number! Got "{index}" instead.')
                 exit(1)
 
             index = int(index)
 
             if index < 1:
-                cli.log.error('Device index must be greater than 0! Got %s', index)
+                cli.log.error(f'Device index must be greater than 0! Got "{index}".')
                 exit(1)
 
         else:
-            cli.log.error('Invalid format for device, expected "<pid>:<vid>[:<index>]" but got "%s".', cli.config.console.device)
+            cli.log.error(f'Invalid format for device, expected "<pid>:<vid>[:<index>]" but got "{cli.config.console.device}".')
             cli.print_help()
             exit(1)
 
