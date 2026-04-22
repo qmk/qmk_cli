@@ -96,9 +96,9 @@ def main():
 
         except ImportError as e:
             if qmk_firmware.name != 'qmk_firmware':
-                print('Warning: %s does not end in "qmk_firmware". Do you need to set QMK_HOME to "%s/qmk_firmware"?' % (qmk_firmware, qmk_firmware))
+                print(f'Warning: {qmk_firmware} does not end in "qmk_firmware". Do you need to set QMK_HOME to "{qmk_firmware}/qmk_firmware"?')
 
-            print('Error: %s: %s', (e.__class__.__name__, e))
+            print(f'Error: {e.__class__}: {e}')
             print_exc()
             sys.exit(1)
 
@@ -110,7 +110,7 @@ def main():
 
     elif return_code is not True and isinstance(return_code, int):
         if return_code < 0 or return_code > 255:
-            milc.cli.log.error('Invalid return_code: %d', return_code)
+            milc.cli.log.error(f'Invalid return_code: {return_code}')
             exit(255)
 
         exit(return_code)
