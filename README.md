@@ -44,7 +44,7 @@ We follow PEP517, you can install using [build](https://pypi.org/project/build/)
 
 Setup:
 
-    python3 -m pip install build
+    python3 -m pip install --group dev
 
 Build:
 
