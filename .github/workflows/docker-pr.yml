@@ -3,6 +3,9 @@ name: Test Docker Image
 on:
   pull_request:
 
+env:
+  TEST_TAG: qmkfm/qmk_cli:test
+
 jobs:
   test:
 
@@ -22,9 +25,6 @@ jobs:
 
     - uses: actions/checkout@v7
 
-    - name: Run ci_tests
-      run: ./ci_tests
-
     - name: Install dependencies
       run: |
         python3 -m pip install --upgrade pip
@@ -35,7 +35,18 @@ jobs:
       run: |
         python3 -m build
 
-    - name: Build Container
+    - name: Build Test Container
+      uses: docker/build-push-action@v7
+      with:
+        context: .
+        load: true
+        tags: ${{ env.TEST_TAG }}
+
+    - name: Test
+      run: |
+        docker run --rm ${{ env.TEST_TAG }} qmk setup -y
+
+    - name: Build All Containers
       uses: docker/build-push-action@v7
       with:
         context: .
