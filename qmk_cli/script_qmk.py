@@ -43,7 +43,7 @@ milc.cli.milc_options(version=__version__)
 milc.EMOJI_LOGLEVELS['INFO'] = '{fg_blue}Ψ{style_reset_all}'
 
 # These must happen after the milc.milc_options() call
-import milc.subcommand.config  # noqa, must come after milc.milc_options()
+import milc.subcommand.config  # noqa: E402, must come after milc.milc_options()
 
 
 @milc.cli.entrypoint('CLI wrapper for running QMK commands.')
@@ -83,7 +83,7 @@ def main():
     os.environ['QMK_HOME'] = str(qmk_firmware)
     os.environ['ORIG_CWD'] = os.getcwd()
 
-    import qmk_cli.subcommands
+    import qmk_cli.subcommands  # noqa: F401
 
     # Check out and initialize the qmk_firmware environment
     if is_qmk_firmware(qmk_firmware):
@@ -92,7 +92,7 @@ def main():
         sys.path.append(str(qmk_firmware / 'lib/python'))
 
         try:
-            import qmk.cli  # noqa
+            import qmk.cli  # noqa: F401
 
         except ImportError as e:
             if qmk_firmware.name != 'qmk_firmware':

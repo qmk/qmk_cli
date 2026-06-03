@@ -82,7 +82,7 @@ def setup(cli):
         found_options = [
             f"Delete and reclone {cli.args.fork}",
             "Delete and clone a different fork",
-            "Keep it and continue"
+            "Keep it and continue",
         ]
         delete_confirm = "WARNING: This will delete your current qmk_firmware directory. Proceed?"
 
