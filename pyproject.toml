@@ -36,6 +36,15 @@ dependencies = [
     "pyserial",
 ]
 
+[dependency-groups]
+dev = [
+    "build",
+    "bumpversion",
+    "flake8",
+    "twine",
+    "yapf",
+]
+
 [project.urls]
 "Bug Tracker" = "https://github.com/qmk/qmk_cli/issues"
 Documentation = "https://docs.qmk.fm/cli"

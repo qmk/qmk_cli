@@ -1,3 +1,5 @@
 build
 bumpversion
+flake8
 twine
+yapf
