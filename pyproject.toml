@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "qmk"
 version = "1.2.0"
-license = {text = "MIT"}
+license = "MIT"
 readme = "README.md"
 authors = [{name = "skullydazed", email = "skullydazed@gmail.com"}]
 description = "A program to help users work with QMK Firmware."
