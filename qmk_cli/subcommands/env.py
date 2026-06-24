@@ -10,14 +10,14 @@ from qmk_cli.helpers import is_qmk_firmware, is_qmk_userspace
 @cli.argument('var', arg_only=True, default=None, nargs='?', help='Optional variable to query')
 @cli.subcommand('Prints environment information.')
 def env(cli):
-    home = os.environ.get('QMK_HOME', "")
-    userspace = os.environ.get('QMK_USERSPACE', "")
+    home = os.environ.get('QMK_HOME', '')
+    userspace = os.environ.get('QMK_USERSPACE', '')
     data = {
         'QMK_HOME': home,
-        'QMK_FIRMWARE': home if is_qmk_firmware(Path(home)) else "",
-        'QMK_USERSPACE': userspace if is_qmk_userspace(Path(userspace)) else "",
-        'QMK_DISTRIB_DIR': os.environ.get('QMK_DISTRIB_DIR', ""),
-        'QMK_PATH_PREFIX': os.environ.get('QMK_PATH_PREFIX', "")
+        'QMK_FIRMWARE': home if is_qmk_firmware(Path(home)) else '',
+        'QMK_USERSPACE': userspace if is_qmk_userspace(Path(userspace)) else '',
+        'QMK_DISTRIB_DIR': os.environ.get('QMK_DISTRIB_DIR', ''),
+        'QMK_PATH_PREFIX': os.environ.get('QMK_PATH_PREFIX', '')
     }
 
     # Now munge the current cli config
