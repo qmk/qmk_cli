@@ -39,4 +39,5 @@ jobs:
       uses: docker/build-push-action@v7
       with:
         context: .
+        target: full
         platforms: linux/amd64,linux/arm64
