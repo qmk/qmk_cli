@@ -25,7 +25,12 @@ if [ -e .ci_venv ]; then
     rm -rf .ci_venv
 fi
 
-python3 -m venv .ci_venv
+# Avoid issues with building pillow as we install mingw-w64-x86_64-python-pillow
+if [[ "$(uname -s)" =~ ^MINGW64_NT.* ]]; then
+    CI_VENV_ARGS="--system-site-packages"
+fi
+
+python3 -m venv $CI_VENV_ARGS .ci_venv
 source .ci_venv/bin/activate
 
 # Install dependencies
