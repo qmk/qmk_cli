@@ -40,7 +40,7 @@ dependencies = [
 dev = [
     "build",
     "bumpversion",
-    "flake8",
+    "ruff",
     "twine",
     "yapf",
 ]
@@ -59,6 +59,21 @@ include-package-data = false
 
 [tool.setuptools.packages]
 find = {namespaces = false}
+
+[tool.ruff]
+target-version = "py39"
+
+include = ['qmk_cli/**/*.py', 'test/**/*.py']
+
+[tool.ruff.lint]
+select = ["E", "F", "B", "N", "W", "COM", "C901", "PGH004"]
+ignore = [
+    "E501", # QMK is ok with long lines.
+    "E231", # Conflicts with our yapf config
+]
+
+[tool.ruff.lint.mccabe]
+max-complexity = 14 # Let's slowly crank this down
 
 [tool.yapfignore]
 ignore_patterns = [

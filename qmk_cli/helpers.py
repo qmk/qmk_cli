@@ -8,7 +8,7 @@ from pathlib import Path
 from milc import cli
 
 
-def AbsPath(arg):
+def AbsPath(arg):  # noqa: N802
     """Resolve relative paths to the original working directory.
     """
     arg = Path(arg)
