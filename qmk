@@ -2,4 +2,5 @@
 """Wrapper to call the qmk cli script entrypoint.
 """
 import qmk_cli.script_qmk
+
 qmk_cli.script_qmk.main()
