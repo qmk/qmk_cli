@@ -106,7 +106,7 @@ jobs:
 
     - name: Test
       run: |
-        docker run --rm -v ${{ github.workspace }}:/qmk_cli ${{ env.TEST_TAG }} /qmk_cli/ci_tests -a
+        docker run --rm -v ${{ github.workspace }}:/qmk_cli -w /qmk_cli ${{ env.TEST_TAG }} /qmk_cli/ci_tests -a
 
     - name: Build All Containers
       uses: docker/build-push-action@v7
