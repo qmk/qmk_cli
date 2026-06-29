@@ -1,0 +1,41 @@
+name: CLI Lint
+
+permissions:
+  contents: read
+
+on:
+  push:
+    branches:
+    - master
+  pull_request:
+    paths:
+    - 'qmk_cli/**'
+    - 'pyproject.toml'
+    - '.github/workflows/cli_lint.yml'
+
+jobs:
+  lint:
+    runs-on: ubuntu-slim
+
+    steps:
+    - uses: actions/setup-python@v6
+      with:
+        python-version: '3.9' 
+
+    - name: Activate virtualenv
+      shell: bash
+      run: |
+        python -m venv .ci_venv
+        source .ci_venv/bin/activate
+        echo PATH=$PATH >> $GITHUB_ENV
+
+    - uses: actions/checkout@v7
+
+    - name: Install dependencies
+      run: python -m pip install --group dev
+
+    - name: Run lint
+      run: ruff check --no-cache --output-format=github
+
+    - name: Run format
+      run: yapf -r --diff qmk_cli

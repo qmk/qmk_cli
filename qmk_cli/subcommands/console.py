@@ -53,7 +53,7 @@ KNOWN_BOOTLOADERS = {
     ('2A03', '0036'): 'caterina: Arduino Leonardo',
     ('2A03', '0037'): 'caterina: Arduino Micro',
     ('314B', '0106'): 'apm32-dfu: APM32 DFU ISP Mode',
-    ('342D', 'DFA0'): 'wb32-dfu: WB32 Device in DFU Mode'
+    ('342D', 'DFA0'): 'wb32-dfu: WB32 Device in DFU Mode',
 }
 
 

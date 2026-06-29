@@ -17,7 +17,7 @@ def env(cli):
         'QMK_FIRMWARE': home if is_qmk_firmware(Path(home)) else "",
         'QMK_USERSPACE': userspace if is_qmk_userspace(Path(userspace)) else "",
         'QMK_DISTRIB_DIR': os.environ.get('QMK_DISTRIB_DIR', ""),
-        'QMK_PATH_PREFIX': os.environ.get('QMK_PATH_PREFIX', "")
+        'QMK_PATH_PREFIX': os.environ.get('QMK_PATH_PREFIX', ""),
     }
 
     # Now munge the current cli config
