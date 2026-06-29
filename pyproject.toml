@@ -63,7 +63,7 @@ find = {namespaces = false}
 [tool.ruff]
 target-version = "py39"
 
-include = ['qmk_cli/**/*.py', 'test/**/*.py']
+include = ['qmk_cli/**/*.py']
 
 [tool.ruff.lint]
 select = ["E", "F", "B", "N", "W", "COM", "C901", "PGH004"]
