@@ -5,12 +5,11 @@ import shlex
 import subprocess
 import sys
 from pathlib import Path
-from shutil import rmtree
 
 from milc import cli
 from milc.questions import choice, question, yesno
 from qmk_cli.git import git_clone
-from qmk_cli.helpers import AbsPath, is_qmk_firmware
+from qmk_cli.helpers import AbsPath, is_qmk_firmware, rmtree
 
 default_base = 'https://github.com'
 default_repo = 'qmk_firmware'

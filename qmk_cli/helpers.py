@@ -1,7 +1,10 @@
 """Useful helper functions.
 """
 import os
+import sys
+import stat
 import json
+import shutil
 from functools import lru_cache
 from pathlib import Path
 
@@ -16,6 +19,20 @@ def AbsPath(arg):  # noqa: N802
         return (Path(os.environ['ORIG_CWD']) / arg).absolute()
 
     return arg
+
+
+def rmtree(path):
+    """Safe version of shutil.rmtree which handles errors on Windows where some of the files have their read-only bit set."""
+    def remove_readonly(func, path, _):
+        """Clear the readonly bit and reattempt the removal."""
+        os.chmod(path, stat.S_IWRITE)
+        func(path)
+
+    if sys.version_info >= (3, 12):
+        # See https://docs.python.org/3.12/whatsnew/3.12.html#shutil
+        return shutil.rmtree(path, onexc=remove_readonly)
+    else:
+        return shutil.rmtree(path, onerror=remove_readonly)
 
 
 def is_qmk_firmware(qmk_firmware):
