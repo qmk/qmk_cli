@@ -1,6 +1,0 @@
-[flake8]
-ignore = E501
-exclude =
-    __pycache__
-    .direnv
-    .env
