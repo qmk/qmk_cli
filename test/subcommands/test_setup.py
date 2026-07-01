@@ -49,10 +49,9 @@ def test_setup_both_yes_no_invalid(subcommand, mock_cli):
     type(mock_cli.args).yes = PropertyMock(return_value=True)
     type(mock_cli.args).no = PropertyMock(return_value=True)
 
-    with pytest.raises(SystemExit) as e:
-        subcommand.setup(mock_cli)
+    ret = subcommand.setup(mock_cli)
 
-    assert e.value.code == 1
+    assert ret is False
 
 
 def test_setup_reclone(subcommand, mock_cli, is_qmk_firmware, temp_directory, yesno, choice, git_clone_fork):
@@ -70,6 +69,23 @@ def test_setup_reclone(subcommand, mock_cli, is_qmk_firmware, temp_directory, ye
     git_clone_fork.assert_called_once()
 
 
+def test_setup_reclone_failed(subcommand, mock_cli, is_qmk_firmware, temp_directory, yesno, choice, git_clone_fork):
+    type(mock_cli.args).yes = PropertyMock(return_value=False)
+    type(mock_cli.args).no = PropertyMock(return_value=False)
+    type(mock_cli.args).home = PropertyMock(return_value=temp_directory)
+    type(mock_cli.args).fork = 'asdf'
+    choice.return_value = 'Delete and reclone asdf'
+    yesno.return_value = True
+    git_clone_fork.return_value = False
+
+    ret = subcommand.setup(mock_cli)
+
+    yesno.assert_called_once()
+    assert 'This will delete your current qmk_firmware directory.' in yesno.call_args.args[0]
+    git_clone_fork.assert_called_once()
+    assert ret is False
+
+
 def test_setup_reclone_no(subcommand, mock_cli, is_qmk_firmware, temp_directory, yesno, choice, git_clone_fork):
     type(mock_cli.args).yes = PropertyMock(return_value=False)
     type(mock_cli.args).no = PropertyMock(return_value=False)
@@ -78,10 +94,9 @@ def test_setup_reclone_no(subcommand, mock_cli, is_qmk_firmware, temp_directory,
     choice.return_value = 'Delete and reclone asdf'
     yesno.return_value = False
 
-    with pytest.raises(SystemExit) as e:
-        subcommand.setup(mock_cli)
+    ret = subcommand.setup(mock_cli)
 
-    assert e.value.code == 1
+    assert ret is False
     git_clone_fork.assert_not_called()
 
 
@@ -99,6 +114,22 @@ def test_setup_clone_diff_fork(subcommand, mock_cli, is_qmk_firmware, temp_direc
     git_clone_fork.assert_called_once()
 
 
+def test_setup_clone_diff_fork_failed(subcommand, mock_cli, is_qmk_firmware, temp_directory, yesno, choice, question, git_clone_fork):
+    type(mock_cli.args).yes = PropertyMock(return_value=False)
+    type(mock_cli.args).no = PropertyMock(return_value=False)
+    type(mock_cli.args).home = PropertyMock(return_value=temp_directory)
+    choice.return_value = 'Delete and clone a different fork'
+    yesno.return_value = True
+    git_clone_fork.return_value = False
+
+    ret = subcommand.setup(mock_cli)
+
+    yesno.assert_called_once()
+    assert 'This will delete your current qmk_firmware directory.' in yesno.call_args.args[0]
+    git_clone_fork.assert_called_once()
+    assert ret is False
+
+
 def test_setup_clone_diff_fork_no(subcommand, mock_cli, is_qmk_firmware, temp_directory, yesno, choice, question, git_clone_fork):
     type(mock_cli.args).yes = PropertyMock(return_value=False)
     type(mock_cli.args).no = PropertyMock(return_value=False)
@@ -106,10 +137,9 @@ def test_setup_clone_diff_fork_no(subcommand, mock_cli, is_qmk_firmware, temp_di
     choice.return_value = 'Delete and clone a different fork'
     yesno.return_value = False
 
-    with pytest.raises(SystemExit) as e:
-        subcommand.setup(mock_cli)
+    ret = subcommand.setup(mock_cli)
 
-    assert e.value.code == 1
+    assert ret is False
     git_clone_fork.assert_not_called()
 
 
@@ -120,10 +150,9 @@ def test_setup_home_exists_not_empty(subcommand, mock_cli, is_qmk_firmware, temp
     is_qmk_firmware.return_value = False
     (temp_directory / 'asdf').touch()
 
-    with pytest.raises(SystemExit) as e:
-        subcommand.setup(mock_cli)
+    ret = subcommand.setup(mock_cli)
 
-    assert e.value.code == 1
+    assert ret is False
 
 
 def test_setup_missing(subcommand, mock_cli, is_qmk_firmware, temp_directory, yesno, git_clone_fork):
@@ -138,6 +167,22 @@ def test_setup_missing(subcommand, mock_cli, is_qmk_firmware, temp_directory, ye
     yesno.assert_called_once()
     assert 'Would you like to clone' in yesno.call_args.args[0]
     git_clone_fork.assert_called_once()
+
+
+def test_setup_missing_failed(subcommand, mock_cli, is_qmk_firmware, temp_directory, yesno, git_clone_fork):
+    type(mock_cli.args).yes = PropertyMock(return_value=False)
+    type(mock_cli.args).no = PropertyMock(return_value=False)
+    type(mock_cli.args).home = PropertyMock(return_value=temp_directory)
+    is_qmk_firmware.return_value = False
+    yesno.return_value = True
+    git_clone_fork.return_value = False
+
+    ret = subcommand.setup(mock_cli)
+
+    yesno.assert_called_once()
+    assert 'Would you like to clone' in yesno.call_args.args[0]
+    git_clone_fork.assert_called_once()
+    assert ret is False
 
 
 def test_setup_missing_no(subcommand, mock_cli, is_qmk_firmware, temp_directory, yesno, git_clone_fork):

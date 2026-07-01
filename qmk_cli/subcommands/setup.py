@@ -23,7 +23,7 @@ DEFAULT_BRANCH = 'master'
 @cli.argument('-H', '--home', arg_only=True, default=Path(os.environ['QMK_HOME']), type=AbsPath, help='The location for QMK Firmware. Default: %s' % os.environ['QMK_HOME'])
 @cli.argument('fork', arg_only=True, default=DEFAULT_FORK, nargs='?', help='The qmk_firmware fork to clone. Default: %s' % DEFAULT_FORK)
 @cli.subcommand('Setup your computer for qmk_firmware.')
-def setup(cli):
+def setup(cli):  # noqa: C901
     """Guide the user through setting up their QMK environment.
     """
     clone_prompt = 'Would you like to clone {fg_cyan}%s{fg_reset} to {fg_cyan}%s{fg_reset}?' % (cli.args.fork, shlex.quote(str(cli.args.home)))
@@ -32,7 +32,7 @@ def setup(cli):
     # Sanity checks
     if cli.args.yes and cli.args.no:
         cli.log.error("Can't use both --yes and --no at the same time.")
-        exit(1)
+        return False
 
     # Check on qmk_firmware
     # If it exists, ask the user what to do with it
@@ -50,18 +50,20 @@ def setup(cli):
         found_action = choice(found_prompt, options=found_options, default=2)
         if found_action == f"Delete and reclone {cli.args.fork}":
             if not yesno(delete_confirm, default=False):
-                exit(1)
+                return False
 
-            git_clone_fork(cli.args.home, cli.args.baseurl, cli.args.fork, cli.args.branch, force=True)
+            if not git_clone_fork(cli.args.home, cli.args.baseurl, cli.args.fork, cli.args.branch, force=True):
+                return False
 
         elif found_action == "Delete and clone a different fork":
             fork_name = question("Enter the name of the fork:", default=cli.args.fork)
             branch_name = question("Enter the branch name to clone:", default=cli.args.branch)
 
             if not yesno(delete_confirm, default=False):
-                exit(1)
+                return False
 
-            git_clone_fork(cli.args.home, cli.args.baseurl, fork_name, branch_name, force=True)
+            if not git_clone_fork(cli.args.home, cli.args.baseurl, fork_name, branch_name, force=True):
+                return False
 
     # Exists (but not an empty dir)
     elif cli.args.home.exists() and any(cli.args.home.iterdir()):
@@ -71,12 +73,13 @@ def setup(cli):
             cli.log.warning('Warning: %s does not end in "qmk_firmware". Did you mean to use "--home %s/qmk_firmware"?' % (path_str, path_str))
 
         cli.log.error("Path '%s' exists but is not a qmk_firmware clone!", path_str)
-        exit(1)
+        return False
 
     else:
         cli.log.error('Could not find qmk_firmware!')
         if yesno(clone_prompt):
-            git_clone_fork(cli.args.home, cli.args.baseurl, cli.args.fork, cli.args.branch)
+            if not git_clone_fork(cli.args.home, cli.args.baseurl, cli.args.fork, cli.args.branch):
+                return False
         else:
             cli.log.warning('Not cloning qmk_firmware due to user input or --no flag.')
 
