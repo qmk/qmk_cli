@@ -5,7 +5,7 @@ set -e
 
 TMPDIR=$(mktemp -d)
 
-trap "rm -rf $TMPDIR" EXIT
+trap 'rm -rf "$TMPDIR"' EXIT
 
 CI_VENV="$TMPDIR/.ci_venv"
 
