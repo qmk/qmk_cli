@@ -8,7 +8,7 @@ from milc import cli
 DEFAULT_UPSTREAM = 'https://github.com/qmk/qmk_firmware'
 
 
-def git_clone(url, destination, branch):
+def git_clone(destination, url, branch):
     """Add the qmk/qmk_firmware upstream to a qmk_firmware clone."""
     git_clone = [
         'git',
@@ -44,7 +44,7 @@ def git_set_upstream(destination):
     git_remote = [
         'git',
         '-C',
-        destination,
+        str(destination),
         'remote',
         'add',
         'upstream',
@@ -78,7 +78,7 @@ def git_clone_fork(destination, baseurl, fork, branch, force=False):
     if force:
         rmtree(destination)
 
-    if not git_clone(url, destination, branch):
+    if not git_clone(destination, url, branch):
         return False
 
     return git_set_upstream(destination)

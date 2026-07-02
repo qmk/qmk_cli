@@ -25,4 +25,4 @@ def clone(cli):
         cli.log.error('Destination already exists: %s', cli.args.destination)
         return False
 
-    return git_clone(git_url, cli.args.destination, cli.args.branch)
+    return git_clone(cli.args.destination, git_url, cli.args.branch)

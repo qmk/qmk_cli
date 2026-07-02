@@ -8,7 +8,7 @@ import qmk_cli.git
 @patch("qmk_cli.git.subprocess.Popen", side_effect=Exception("foobar"))
 @patch("qmk_cli.git.cli.log.error")
 def test_git_clone_except(mock_log_error, mock_popen):
-    ret = qmk_cli.git.git_clone('https://github.com/qmk/qmk_firmware', '/tmp', 'master')
+    ret = qmk_cli.git.git_clone('/tmp', 'https://github.com/qmk/qmk_firmware', 'master')
 
     assert "Could not run" in str(mock_log_error.call_args_list)
     assert "Exception:foobar" in str(mock_log_error.call_args_list)
@@ -20,7 +20,7 @@ def test_git_clone_logs_output(mock_popen, capsys):
     type(mock_popen().__enter__()).returncode = PropertyMock(return_value=0)
     type(mock_popen().__enter__()).stdout = PropertyMock(return_value=['asdf'])
 
-    ret = qmk_cli.git.git_clone('https://github.com/qmk/qmk_firmware', '/tmp', 'master')
+    ret = qmk_cli.git.git_clone('/tmp', 'https://github.com/qmk/qmk_firmware', 'master')
 
     captured = capsys.readouterr().out
     assert 'asdf' in captured
@@ -31,7 +31,7 @@ def test_git_clone_logs_output(mock_popen, capsys):
 def test_git_clone_captures_exit_code(mock_popen):
     type(mock_popen().__enter__()).returncode = PropertyMock(return_value=1)
 
-    ret = qmk_cli.git.git_clone('https://github.com/qmk/qmk_firmware', '/tmp', 'master')
+    ret = qmk_cli.git.git_clone('/tmp', 'https://github.com/qmk/qmk_firmware', 'master')
 
     assert ret is False
 
@@ -95,7 +95,7 @@ def test_git_clone_fork_force(git_set_upstream, git_clone, temp_directory):
 @pytest.mark.integration
 def test_git_clone(temp_directory):
     qmk_firmware = temp_directory / 'qmk_firmware'
-    ret = qmk_cli.git.git_clone('https://github.com/qmk/qmk_firmware', qmk_firmware.as_posix(), 'master')
+    ret = qmk_cli.git.git_clone(qmk_firmware.as_posix(), 'https://github.com/qmk/qmk_firmware', 'master')
 
     from qmk_cli.helpers import is_qmk_firmware
 
