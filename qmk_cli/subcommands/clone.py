@@ -23,6 +23,6 @@ def clone(cli):
     # Exists (but not an empty dir)
     if cli.args.destination.exists() and any(cli.args.destination.iterdir()):
         cli.log.error('Destination already exists: %s', cli.args.destination)
-        exit(1)
+        return False
 
-    return git_clone(git_url, cli.args.destination, cli.args.branch)
+    return git_clone(cli.args.destination, git_url, cli.args.branch)

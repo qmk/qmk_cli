@@ -1,6 +1,7 @@
 """Prints environment information.
 """
 import os
+import sys
 from pathlib import Path
 
 from milc import cli
@@ -26,6 +27,10 @@ def env(cli):
         data[converted_key] = val
 
     if cli.args.var:
+        if cli.args.var not in data:
+            print(f'Variable "{cli.args.var}" does not exist!', file=sys.stderr)
+            return False
+
         # dump out requested arg
         print(data[cli.args.var])
     else:

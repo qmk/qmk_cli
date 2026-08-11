@@ -17,8 +17,17 @@ jobs:
     - name: Install dependencies
       run: apt-get update && apt-get install -y python3-venv
 
+    - name: Run unit test
+      shell: bash
+      run: |
+        python3 -m venv .ci_venv
+        source .ci_venv/bin/activate
+        python3 -m pip install -r requirements.txt
+        python3 -m pip install --group dev
+        pytest
+
     - name: Run ci_tests
-      run: ./ci_tests -a
+      run: ./ci_tests
 
   test_cli_linux_macos:
     needs: test_cli_base_container
@@ -39,7 +48,7 @@ jobs:
         python-version: ${{ matrix.python-version }}
 
     - name: Run ci_tests
-      run: ./ci_tests -a
+      run: ./ci_tests
 
   test_cli_win:
     needs: test_cli_base_container
@@ -53,7 +62,7 @@ jobs:
       uses: msys2/setup-msys2@v2
       with:
         update: true
-        install: git mingw-w64-x86_64-toolchain mingw-w64-x86_64-python-pip mingw-w64-x86_64-python-build mingw-w64-x86_64-python-pillow mingw-w64-x86_64-rust mingw-w64-x86_64-python-halo mingw-w64-x86_64-python-nh3 mingw-w64-x86_64-python-rpds-py
+        install: git mingw-w64-x86_64-toolchain mingw-w64-x86_64-python-pip mingw-w64-x86_64-python-build mingw-w64-x86_64-python-pillow mingw-w64-x86_64-rust mingw-w64-x86_64-python-halo mingw-w64-x86_64-python-nh3 mingw-w64-x86_64-python-rpds-py mingw-w64-x86_64-python-ruff
 
     # Upgrade pip due to msys packaging + pypa/build/pull/736 issues
     - name: (MSYS2) Install Python dependencies
@@ -63,7 +72,7 @@ jobs:
 
     - name: Run ci_tests
       shell: msys2 {0}
-      run: ./ci_tests -a
+      run: ./ci_tests
 
   test_docker_container:
     needs: test_cli_base_container
@@ -106,7 +115,7 @@ jobs:
 
     - name: Test
       run: |
-        docker run --rm -v ${{ github.workspace }}:/qmk_cli -w /qmk_cli ${{ env.TEST_TAG }} /qmk_cli/ci_tests -a
+        docker run --rm -v ${{ github.workspace }}:/qmk_cli -w /qmk_cli ${{ env.TEST_TAG }} /qmk_cli/ci_tests
 
     - name: Build All Containers
       uses: docker/build-push-action@v7

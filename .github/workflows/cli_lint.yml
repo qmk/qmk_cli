@@ -38,4 +38,4 @@ jobs:
       run: ruff check --no-cache --output-format=github
 
     - name: Run format
-      run: yapf -r --diff qmk_cli
+      run: yapf -r --diff qmk_cli test

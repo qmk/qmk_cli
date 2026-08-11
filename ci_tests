@@ -3,61 +3,23 @@
 set -e
 #set -x
 
-ADVANCED=false
 TMPDIR=$(mktemp -d)
-QMK_HOME="$TMPDIR/qmk_firmware"
-export QMK_HOME
 
-for arg in $@; do
-    if [ "$arg" = "-a" ]; then
-        ADVANCED=true
-    fi
-done
+trap 'rm -rf "$TMPDIR"' EXIT
 
-if [ $ADVANCED = true ]; then
-    echo "*** Running in advanced mode with tmp files in $TMPDIR"
-else
-    echo "*** Running in basic mode with tmp files in $TMPDIR"
-fi
-
-# Setup our virtualenv
-if [ -e .ci_venv ]; then
-    rm -rf .ci_venv
-fi
+CI_VENV="$TMPDIR/.ci_venv"
 
 # Avoid issues with building pillow as we install mingw-w64-x86_64-python-pillow
 if [[ "$(uname -s)" =~ ^MINGW64_NT.* ]]; then
     CI_VENV_ARGS="--system-site-packages"
 fi
 
-python3 -m venv $CI_VENV_ARGS .ci_venv
-source .ci_venv/bin/activate
+python3 -m venv $CI_VENV_ARGS $CI_VENV
+source $CI_VENV/bin/activate
 
 # Install dependencies
 python3 -m pip install -U pip wheel
 python3 -m pip install .
+python3 -m pip install --group dev
 
-# Ensure that qmk works
-echo "*** Testing 'qmk clone -h'"
-qmk clone -h
-#echo "*** Testing 'qmk config -a'" # Test disabled as `milc` at least 1.6.8+ returns False and thus non-zero exit code
-#qmk config -a
-echo "*** Testing 'qmk setup -n'"
-qmk setup -n
-
-echo
-echo "*** Basic tests completed successfully!"
-
-# Run advanced test if requested
-if [ $ADVANCED = true ]; then
-    echo
-    echo "*** Testing 'qmk setup -y'"
-    qmk setup -y
-
-    echo
-    echo "*** Advanced tests completed successfully!"
-fi
-
-# Cleanup
-deactivate
-rm -rf .ci_venv $TMPDIR
+pytest -vv -m system --qmk=real

@@ -40,6 +40,7 @@ dependencies = [
 dev = [
     "build",
     "bumpversion",
+    "pytest",
     "ruff",
     "twine",
     "yapf",
@@ -63,7 +64,10 @@ find = {namespaces = false}
 [tool.ruff]
 target-version = "py39"
 
-include = ['qmk_cli/**/*.py']
+include = [
+    "qmk_cli/**/*.py",
+    "test/**/*.py",
+]
 
 [tool.ruff.lint]
 select = ["E", "F", "B", "N", "W", "COM", "C901", "PGH004"]
@@ -133,3 +137,10 @@ split_penalty_for_added_line_split = 30
 split_penalty_import_names = 0
 split_penalty_logical_operator = 300
 use_tabs = false
+
+[tool.pytest.ini_options]
+markers = [
+    "integration",
+    "system",
+]
+addopts = "-m 'not (integration or system)'"
