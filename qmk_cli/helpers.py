@@ -97,7 +97,7 @@ def is_qmk_userspace(qmk_userspace):
 
     try:
         return 'userspace_version' in json.loads(path.read_text(encoding="UTF-8"))
-    except json.decoder.JSONDecodeError:
+    except (json.decoder.JSONDecodeError, UnicodeDecodeError):
         return False
 
 
